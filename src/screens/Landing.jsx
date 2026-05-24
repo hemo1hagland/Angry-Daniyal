@@ -5,7 +5,7 @@ export default function Landing({ onStart, onCustom }) {
     <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 text-center">
       {/* Glød bak logo */}
       <div className="relative mb-4">
-        <div className="absolute inset-0 -z-10 animate-glowPulse bg-gradient-to-br from-ember via-violet to-gold blur-3xl opacity-40" />
+        <div className="absolute inset-0 -z-10 animate-glowPulse bg-gradient-to-br from-coral via-violet to-gold blur-3xl opacity-25" />
         <h1 className="font-display text-8xl font-bold tracking-tighter text-white">
           Vors
         </h1>

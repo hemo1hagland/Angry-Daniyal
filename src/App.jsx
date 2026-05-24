@@ -31,8 +31,8 @@ export default function App() {
   return (
     <div className="grain relative mx-auto min-h-screen w-full max-w-md overflow-hidden bg-ink font-body">
       <div className="pointer-events-none fixed inset-0 -z-0">
-        <div className="absolute -left-1/4 top-0 h-1/2 w-3/4 rounded-full bg-violet/10 blur-[120px]" />
-        <div className="absolute -right-1/4 bottom-0 h-1/2 w-3/4 rounded-full bg-ember/10 blur-[120px]" />
+        <div className="absolute -left-1/4 top-0 h-1/2 w-3/4 rounded-full bg-violet/[0.08] blur-[140px]" />
+        <div className="absolute -right-1/4 bottom-0 h-1/2 w-3/4 rounded-full bg-coral/[0.08] blur-[140px]" />
       </div>
 
       <div className="relative z-10 min-h-screen">

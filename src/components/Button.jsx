@@ -1,4 +1,4 @@
-// Gjenbrukbar knapp med premium festfølelse.
+// Gjenbrukbar knapp med premium, varm festfølelse.
 export default function Button({
   children,
   onClick,
@@ -11,7 +11,7 @@ export default function Button({
 
   const variants = {
     primary:
-      "bg-gradient-to-br from-ember to-gold text-ink shadow-[0_8px_30px_-6px_rgba(255,77,77,0.5)]",
+      "bg-gradient-to-br from-coral to-peach text-ink shadow-[0_8px_28px_-6px_rgba(235,115,100,0.35)]",
     ghost:
       "bg-white/5 text-white border border-white/10 backdrop-blur-sm hover:bg-white/10",
     subtle: "bg-transparent text-white/50 hover:text-white/80 py-2 text-base",

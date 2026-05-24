@@ -40,11 +40,11 @@ export default function Players({ players, setPlayers, onNext, onBack }) {
           onKeyDown={(e) => e.key === "Enter" && leggTil()}
           placeholder="Navn"
           maxLength={20}
-          className="flex-1 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4 font-body text-lg text-white placeholder-white/30 outline-none transition focus:border-ember/50"
+          className="flex-1 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4 font-body text-lg text-white placeholder-white/30 outline-none transition focus:border-coral/50"
         />
         <button
           onClick={leggTil}
-          className="rounded-2xl bg-gradient-to-br from-ember to-gold px-6 font-display text-2xl font-bold text-ink active:scale-95"
+          className="rounded-2xl bg-gradient-to-br from-coral to-peach px-6 font-display text-2xl font-bold text-ink active:scale-95"
         >
           +
         </button>
@@ -59,7 +59,7 @@ export default function Players({ players, setPlayers, onNext, onBack }) {
             <span className="font-body text-lg text-white">{p}</span>
             <button
               onClick={() => fjern(i)}
-              className="font-body text-sm text-white/30 transition hover:text-ember"
+              className="font-body text-sm text-white/30 transition hover:text-coral"
             >
               ✕
             </button>

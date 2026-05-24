@@ -8,21 +8,23 @@ export default {
         body: ['"Space Grotesk"', "system-ui", "sans-serif"],
       },
       colors: {
-        ink: "#0a0a0f",
-        plum: "#15101f",
-        ember: "#ff4d4d",
-        gold: "#ffb443",
-        violet: "#a855f7",
+        ink: "#0d0b14",
+        plum: "#16111f",
+        // Varmere, mykere aksenter
+        coral: "#eb7364",
+        peach: "#f4a574",
+        gold: "#f0c76e",
+        violet: "#9b7dcf",
       },
       keyframes: {
         shake: {
           "0%, 100%": { transform: "translateX(0)" },
-          "20%, 60%": { transform: "translateX(-8px) rotate(-3deg)" },
-          "40%, 80%": { transform: "translateX(8px) rotate(3deg)" },
+          "20%, 60%": { transform: "translateX(-6px) rotate(-2deg)" },
+          "40%, 80%": { transform: "translateX(6px) rotate(2deg)" },
         },
         pop: {
           "0%": { transform: "scale(1)" },
-          "50%": { transform: "scale(0.88)" },
+          "50%": { transform: "scale(0.92)" },
           "100%": { transform: "scale(1)" },
         },
         floatUp: {
@@ -30,12 +32,12 @@ export default {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         glowPulse: {
-          "0%, 100%": { opacity: "0.4" },
-          "50%": { opacity: "0.75" },
+          "0%, 100%": { opacity: "0.25" },
+          "50%": { opacity: "0.5" },
         },
         burst: {
           "0%": { transform: "scale(0.6)", opacity: "0" },
-          "40%": { transform: "scale(1.15)", opacity: "1" },
+          "40%": { transform: "scale(1.12)", opacity: "1" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
       },

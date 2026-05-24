@@ -33,7 +33,7 @@ export default function ModeSelect({ onStart, onBack }) {
               onClick={() => setValgtModus(m.id)}
               className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-200 active:scale-95
                 ${aktiv
-                  ? "border-ember/60 bg-gradient-to-br " + m.farge
+                  ? "border-coral/60 bg-gradient-to-br " + m.farge
                   : "border-white/[0.06] bg-white/[0.03]"}`}
             >
               <div className="mb-1 text-3xl">{m.emoji}</div>
@@ -58,7 +58,7 @@ export default function ModeSelect({ onStart, onBack }) {
             onClick={() => setAntall(n)}
             className={`rounded-xl py-3 font-display text-lg font-bold transition-all active:scale-95
               ${antall === n
-                ? "bg-gradient-to-br from-ember to-gold text-ink"
+                ? "bg-gradient-to-br from-coral to-peach text-ink"
                 : "bg-white/[0.04] text-white/60 border border-white/[0.06]"}`}
           >
             {n}

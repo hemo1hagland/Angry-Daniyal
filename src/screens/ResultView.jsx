@@ -13,7 +13,7 @@ export default function ResultView({ modeId, customCards, onNext, onMenu }) {
     <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 text-center">
       <div className="mb-2 animate-burst text-7xl">😡</div>
 
-      <h2 className="mb-1 animate-floatUp font-display text-5xl font-bold tracking-tighter text-ember">
+      <h2 className="mb-1 animate-floatUp font-display text-5xl font-bold tracking-tighter text-coral">
         Du tapte!
       </h2>
       <p

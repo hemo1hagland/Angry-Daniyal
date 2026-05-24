@@ -1,38 +1,42 @@
 import { useState, useEffect, useRef } from "react";
 import Face from "../components/Face";
+import { buildFaceGrid } from "../data/faces";
 
 // Beregner et balansert kolonneantall for et gitt rutenett.
 const COLS = { 9: 3, 16: 4, 25: 5, 36: 6 };
 
 export default function FaceGame({ antall, onLose, onBack, runde }) {
   const [angryIndex, setAngryIndex] = useState(null);
-  const [tappedIndex, setTappedIndex] = useState(null);
-  const [tapte, setTapte] = useState(new Set());
-  const variants = useRef([]);
+  const [faceStates, setFaceStates] = useState([]); // "idle" | "removed" | "boom"
+  const facePairs = useRef([]);
 
-  // Ny runde: velg skjult sint ansikt + tilfeldige varianter.
+  // Ny runde: velg skjult sint ansikt + tilfeldige ansiktspar.
   useEffect(() => {
     setAngryIndex(Math.floor(Math.random() * antall));
-    setTapte(new Set());
-    setTappedIndex(null);
-    variants.current = Array.from({ length: antall }, () =>
-      Math.floor(Math.random() * 2)
-    );
+    setFaceStates(Array(antall).fill("idle"));
+    facePairs.current = buildFaceGrid(antall);
   }, [antall, runde]);
 
   const håndterTrykk = (i) => {
-    if (tappedIndex !== null) return; // runden er over
-    if (tapte.has(i)) return; // allerede trykket
+    if (faceStates[i] !== "idle") return;
 
     if (i === angryIndex) {
-      // Tap!
-      setTappedIndex(i);
+      // BOMBE! Vis sint ansikt
+      setFaceStates((prev) => {
+        const next = [...prev];
+        next[i] = "boom";
+        return next;
+      });
       if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
       setTimeout(() => onLose(), 900);
     } else {
-      // Trygt – marker som trykket
+      // Trygt — fade ut ansiktet
       if (navigator.vibrate) navigator.vibrate(15);
-      setTapte((prev) => new Set(prev).add(i));
+      setFaceStates((prev) => {
+        const next = [...prev];
+        next[i] = "removed";
+        return next;
+      });
     }
   };
 
@@ -65,12 +69,11 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
         className="mx-auto grid w-full max-w-md flex-1 content-center gap-2.5"
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
       >
-        {Array.from({ length: antall }).map((_, i) => (
+        {facePairs.current.map((pair, i) => (
           <Face
-            key={i}
-            variant={variants.current[i] || 0}
-            mood={tappedIndex === i ? "angry" : "neutral"}
-            revealed={false}
+            key={`${runde}-${i}`}
+            pair={pair}
+            state={faceStates[i] || "idle"}
             onClick={() => håndterTrykk(i)}
           />
         ))}

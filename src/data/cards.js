@@ -7,7 +7,7 @@ export const MODES = [
     navn: "Klassisk",
     emoji: "🍻",
     beskrivelse: "Trygge favoritter for hele bordet",
-    farge: "from-amber-500/30 to-orange-600/20",
+    farge: "from-orange-400/25 to-amber-500/15",
   },
   {
     id: "sannhet",
