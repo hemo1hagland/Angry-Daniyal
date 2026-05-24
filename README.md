@@ -1,51 +1,55 @@
-# Vors 🍻
+# 🎉 Vors — Partyspill
 
-En mobil-first drikkeleke-app. Trykk på ansiktene – ett av dem er hemmelig
-sint. Treffer du det, tapte du og får en oppgave fra valgt spillmodus.
+> **Trykk på ansiktene. Én av dem blir sur. Ikke vær uheldig.**
 
-## Funksjoner
-- Rutenett av ansikter (9 / 16 / 25 / 36) med ett skjult "sint" ansikt
-- 4 spillmoduser med 25+ kort hver: Klassisk, Sannhet eller Drikk, Pekeleken, Kaos
-- Legg til spillere (lagres lokalt)
-- Lag egne kort per kategori (lagres lokalt)
-- Mørkt, premium festdesign med animasjoner og haptisk feedback
+Vors er et sosialt partyspill bygget som en webapp. Perfekt for forspill, fester og vennesammenkomster. Sendes rundt bordet – den som trykker på det sinte ansiktet taper og må utføre en oppgave!
 
-## Kjør lokalt
+## ✨ Funksjoner
+
+- 🎭 **Ansiktsspill** — Trykk på et av ansiktene i rutenettet. Én er skjult sint!
+- 🍻 **4 moduser** — Klassisk, Sannhet eller Drikk, Pekeleken, Kaos
+- 👥 **Spillerliste** — Legg til alle som er med
+- 📝 **Egne kort** — Lag dine egne oppgaver, lagret lokalt
+- 📱 **Mobiloptimert** — Designet for å sendes rundt bordet
+- 🌙 **Mørkt tema** — Premium dark-mode design med glød-effekter
+
+## 🎮 Spillmoduser
+
+| Modus | Beskrivelse |
+|-------|-------------|
+| 🍻 Klassisk | Trygge favoritter for hele bordet |
+| 🤐 Sannhet eller Drikk | Svar ærlig – eller ta en slurk |
+| 👉 Pekeleken | Pek på en – den med flest peker drikker |
+| 💥 Kaos | Helt uforutsigbart. Lykke til. |
+
+## 🛠 Tech Stack
+
+- **React 19** + **Vite 8**
+- **Tailwind CSS 3**
+- **Space Grotesk** font
+- Custom karakter-illustrasjoner
+
+## 🚀 Kom i gang
+
 ```bash
+# Installer avhengigheter
 npm install
+
+# Start utviklingsserver
 npm run dev
-```
-Åpne adressen som vises (vanligvis http://localhost:5173).
 
-## Bygg for produksjon
-```bash
-npm run build      # bygger til dist/
-npm run preview    # forhåndsvis bygget
+# Bygg for produksjon
+npm run build
 ```
 
-## Deploy
-Last opp `dist/`-mappa til Netlify, Vercel eller Lovable.
+## 📱 Slik spiller du
 
-## Struktur
-```
-src/
-  App.jsx                 navigasjon mellom skjermer (state-styrt)
-  data/cards.js           4 kategorier × 25+ kort
-  hooks/useLocalStorage.js
-  components/
-    Button.jsx            gjenbrukbar knapp
-    Face.jsx              eget SVG-ansikt (neutral / angry)
-  screens/
-    Landing.jsx
-    Players.jsx
-    ModeSelect.jsx
-    FaceGame.jsx          hovedspillet
-    ResultView.jsx
-    CustomCards.jsx
-```
+1. Åpne appen på mobilen
+2. Legg til spillere
+3. Velg modus og antall ansikter
+4. Send telefonen rundt — alle trykker på et ansikt
+5. Den som treffer det sinte ansiktet taper og får en oppgave!
 
-## Utvide senere
-- Lyd på tap / trykk
-- Økende sjanse per trykk (mer spenning utover i runden)
-- Flere mekanikker (hjul, finger-roulette)
-- Vis hvem sin tur det er (turbasert spillerlogikk)
+## 📄 Lisens
+
+MIT

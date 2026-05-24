@@ -16,7 +16,7 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
     setTapte(new Set());
     setTappedIndex(null);
     variants.current = Array.from({ length: antall }, () =>
-      Math.floor(Math.random() * 4)
+      Math.floor(Math.random() * 2)
     );
   }, [antall, runde]);
 
