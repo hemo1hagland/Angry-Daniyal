@@ -1,27 +1,35 @@
-// Gjenbrukbar knapp med premium, varm festfølelse.
+// Apple-stil knapp — ren, avrundet, premium.
 export default function Button({
   children,
   onClick,
   variant = "primary",
   disabled = false,
+  size = "lg",
   className = "",
 }) {
   const base =
-    "w-full rounded-2xl px-6 py-4 font-display font-semibold text-lg tracking-tight transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:active:scale-100 disabled:cursor-not-allowed";
+    "w-full font-display font-semibold tracking-tight transition-all duration-200 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100 disabled:cursor-not-allowed select-none";
+
+  const sizes = {
+    lg: "rounded-[16px] px-6 py-4 text-lg",
+    md: "rounded-[14px] px-5 py-3.5 text-base",
+    sm: "rounded-[12px] px-4 py-2.5 text-sm",
+  };
 
   const variants = {
     primary:
-      "bg-gradient-to-br from-coral to-peach text-ink shadow-[0_8px_28px_-6px_rgba(235,115,100,0.35)]",
+      "bg-white text-[#1a1a1a] shadow-[0_2px_12px_rgba(255,255,255,0.12)] hover:shadow-[0_2px_20px_rgba(255,255,255,0.18)] hover:bg-white/95",
+    secondary:
+      "bg-white/[0.08] text-white backdrop-blur-md border border-white/[0.1] hover:bg-white/[0.12]",
     ghost:
-      "bg-white/5 text-white border border-white/10 backdrop-blur-sm hover:bg-white/10",
-    subtle: "bg-transparent text-white/50 hover:text-white/80 py-2 text-base",
+      "bg-transparent text-white/60 hover:text-white/90",
   };
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${base} ${variants[variant]} ${className}`}
+      className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
     >
       {children}
     </button>

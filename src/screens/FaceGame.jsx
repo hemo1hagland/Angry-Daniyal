@@ -47,11 +47,11 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="font-body text-sm text-white/40 transition hover:text-white/70"
+          className="rounded-full bg-white/[0.06] px-4 py-2 font-body text-sm text-white/50 transition-all duration-200 hover:bg-white/[0.1] hover:text-white/70 active:scale-[0.95]"
         >
-          ← Meny
+          ← Tilbake
         </button>
-        <span className="font-body text-xs uppercase tracking-[0.25em] text-white/30">
+        <span className="font-body text-xs uppercase tracking-[0.25em] text-white/25">
           Send rundt
         </span>
       </div>
