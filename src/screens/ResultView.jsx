@@ -5,11 +5,11 @@ export default function ResultView({ onNext, onMenu }) {
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
       <div className="mb-3 animate-burst text-7xl">😡</div>
 
-      <h2 className="mb-2 animate-floatUp font-display text-5xl font-bold tracking-tighter text-white">
+      <h2 className="mb-2 animate-floatUp font-display text-5xl font-bold tracking-tighter text-gray-900">
         Du tapte!
       </h2>
       <p
-        className="mb-14 animate-floatUp font-body text-lg text-white/40"
+        className="mb-14 animate-floatUp font-body text-lg text-gray-400"
         style={{ animationDelay: "0.08s" }}
       >
         Du traff det sinte ansiktet.

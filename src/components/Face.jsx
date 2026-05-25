@@ -1,13 +1,12 @@
-// Ansikts-komponent med bilde-baserte ansikter.
-// Props:
-//   pair   – objekt med { happy, angry } bilde-stier
-//   state  – "idle" | "removed" | "boom"
-//   onClick
+// Ansikts-komponent — lyst tema, Apple-stil.
+// state: "idle" | "removed" | "boom"
 
-export default function Face({ pair, state = "idle", onClick }) {
+import { FACE } from "../data/faces";
+
+export default function Face({ state = "idle", onClick }) {
   const isBoom = state === "boom";
   const isRemoved = state === "removed";
-  const src = isBoom ? pair.angry : pair.happy;
+  const src = isBoom ? FACE.angry : FACE.happy;
 
   return (
     <button
@@ -15,10 +14,10 @@ export default function Face({ pair, state = "idle", onClick }) {
       disabled={state !== "idle"}
       className={`relative aspect-square w-full overflow-hidden rounded-2xl transition-all duration-300
         ${isBoom
-          ? "animate-shake ring-2 ring-coral/60 shadow-[0_0_24px_-4px_rgba(235,115,100,0.55)] bg-gradient-to-br from-red-400/20 to-rose-500/15"
+          ? "animate-shake ring-2 ring-red-400/50 shadow-[0_0_20px_-4px_rgba(239,68,68,0.3)] bg-red-50"
           : isRemoved
             ? "scale-0 opacity-0 pointer-events-none"
-            : "bg-white/[0.04] active:scale-95 hover:bg-white/[0.06] ring-1 ring-white/[0.06] cursor-pointer"
+            : "bg-gray-100 active:scale-95 hover:bg-gray-50 ring-1 ring-gray-200/60 cursor-pointer shadow-sm hover:shadow-md"
         }`}
       style={{
         transition: isRemoved
@@ -35,7 +34,6 @@ export default function Face({ pair, state = "idle", onClick }) {
         draggable={false}
       />
 
-      {/* Myk rød overlay ved bombe */}
       {isBoom && (
         <div className="absolute inset-0 bg-red-400/10 animate-pulse pointer-events-none rounded-2xl" />
       )}

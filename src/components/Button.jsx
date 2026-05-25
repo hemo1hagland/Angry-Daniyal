@@ -1,35 +1,28 @@
-// Apple-stil knapp — ren, avrundet, premium.
+// Apple-stil knapp — hvitt tema.
 export default function Button({
   children,
   onClick,
   variant = "primary",
   disabled = false,
-  size = "lg",
   className = "",
 }) {
   const base =
-    "w-full font-display font-semibold tracking-tight transition-all duration-200 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100 disabled:cursor-not-allowed select-none";
-
-  const sizes = {
-    lg: "rounded-[16px] px-6 py-4 text-lg",
-    md: "rounded-[14px] px-5 py-3.5 text-base",
-    sm: "rounded-[12px] px-4 py-2.5 text-sm",
-  };
+    "w-full rounded-[16px] px-6 py-4 font-display font-semibold text-lg tracking-tight transition-all duration-200 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100 disabled:cursor-not-allowed select-none";
 
   const variants = {
     primary:
-      "bg-white text-[#1a1a1a] shadow-[0_2px_12px_rgba(255,255,255,0.12)] hover:shadow-[0_2px_20px_rgba(255,255,255,0.18)] hover:bg-white/95",
+      "bg-gray-900 text-white shadow-[0_2px_16px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_24px_rgba(0,0,0,0.16)] hover:bg-gray-800",
     secondary:
-      "bg-white/[0.08] text-white backdrop-blur-md border border-white/[0.1] hover:bg-white/[0.12]",
+      "bg-gray-100 text-gray-700 hover:bg-gray-200",
     ghost:
-      "bg-transparent text-white/60 hover:text-white/90",
+      "bg-transparent text-gray-500 hover:text-gray-700",
   };
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`${base} ${variants[variant]} ${className}`}
     >
       {children}
     </button>

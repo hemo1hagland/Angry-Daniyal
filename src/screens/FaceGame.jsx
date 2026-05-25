@@ -1,27 +1,21 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Face from "../components/Face";
-import { buildFaceGrid } from "../data/faces";
 
-// Beregner et balansert kolonneantall for et gitt rutenett.
 const COLS = { 9: 3, 16: 4, 25: 5, 36: 6 };
 
 export default function FaceGame({ antall, onLose, onBack, runde }) {
   const [angryIndex, setAngryIndex] = useState(null);
-  const [faceStates, setFaceStates] = useState([]); // "idle" | "removed" | "boom"
-  const facePairs = useRef([]);
+  const [faceStates, setFaceStates] = useState([]);
 
-  // Ny runde: velg skjult sint ansikt + tilfeldige ansiktspar.
   useEffect(() => {
     setAngryIndex(Math.floor(Math.random() * antall));
     setFaceStates(Array(antall).fill("idle"));
-    facePairs.current = buildFaceGrid(antall);
   }, [antall, runde]);
 
   const håndterTrykk = (i) => {
     if (faceStates[i] !== "idle") return;
 
     if (i === angryIndex) {
-      // BOMBE! Vis sint ansikt
       setFaceStates((prev) => {
         const next = [...prev];
         next[i] = "boom";
@@ -30,7 +24,6 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
       if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
       setTimeout(() => onLose(), 900);
     } else {
-      // Trygt — fade ut ansiktet
       if (navigator.vibrate) navigator.vibrate(15);
       setFaceStates((prev) => {
         const next = [...prev];
@@ -43,24 +36,24 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
   const cols = COLS[antall] || 4;
 
   return (
-    <div className="flex min-h-full flex-col px-5 py-8">
+    <div className="flex min-h-screen flex-col px-5 py-8">
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="rounded-full bg-white/[0.06] px-4 py-2 font-body text-sm text-white/50 transition-all duration-200 hover:bg-white/[0.1] hover:text-white/70 active:scale-[0.95]"
+          className="rounded-full bg-gray-100 px-4 py-2 font-body text-sm text-gray-500 transition-all duration-200 hover:bg-gray-200 active:scale-[0.95]"
         >
           ← Tilbake
         </button>
-        <span className="font-body text-xs uppercase tracking-[0.25em] text-white/25">
+        <span className="font-body text-xs uppercase tracking-[0.25em] text-gray-400">
           Send rundt
         </span>
       </div>
 
       <div className="mb-8 text-center">
-        <h2 className="font-display text-3xl font-bold tracking-tight text-white">
+        <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900">
           Trykk på et ansikt
         </h2>
-        <p className="mt-1 font-body text-white/45">
+        <p className="mt-1 font-body text-gray-400">
           Én av dem er sur. Tør du?
         </p>
       </div>
@@ -69,10 +62,9 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
         className="mx-auto grid w-full max-w-md flex-1 content-center gap-2.5"
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
       >
-        {facePairs.current.map((pair, i) => (
+        {Array.from({ length: antall }).map((_, i) => (
           <Face
             key={`${runde}-${i}`}
-            pair={pair}
             state={faceStates[i] || "idle"}
             onClick={() => håndterTrykk(i)}
           />
