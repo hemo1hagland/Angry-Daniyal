@@ -6,10 +6,12 @@ import ResultView from "./screens/ResultView";
 export default function App() {
   const [screen, setScreen] = useState("landing");
   const [antall, setAntall] = useState(16);
+  const [slurker, setSlurker] = useState(2);
   const [runde, setRunde] = useState(0);
 
-  const startSpill = (valgtAntall) => {
+  const startSpill = (valgtAntall, valgtSlurker) => {
     setAntall(valgtAntall);
+    setSlurker(valgtSlurker);
     setRunde((r) => r + 1);
     setScreen("game");
   };
@@ -36,6 +38,7 @@ export default function App() {
 
       {screen === "result" && (
         <ResultView
+          slurker={slurker}
           onNext={nyRunde}
           onMenu={() => setScreen("landing")}
         />
