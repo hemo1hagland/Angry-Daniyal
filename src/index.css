@@ -20,3 +20,66 @@ body {
   user-select: none;
   overscroll-behavior: none;
 }
+
+@keyframes cardFlip {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) rotateX(72deg) scale(0.9);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-4px) rotateX(0deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes horseBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes dust {
+  0% {
+    opacity: 0.45;
+    transform: translateX(8px) scaleX(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-18px) scaleX(1.4);
+  }
+}
+
+@keyframes confetti {
+  0% {
+    opacity: 1;
+    transform: translateY(-20px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(760px) rotate(520deg);
+  }
+}
+
+.animate-cardFlip {
+  animation: cardFlip 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+.animate-horseBob {
+  animation: horseBob 0.18s ease-in-out infinite;
+}
+
+.animate-dust {
+  animation: dust 0.35s ease-out infinite;
+}
+
+.animate-confetti {
+  animation: confetti 1.9s ease-in forwards;
+}

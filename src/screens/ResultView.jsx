@@ -2,6 +2,8 @@ import Button from "../components/Button";
 import { FACE } from "../data/faces";
 
 export default function ResultView({ slurker, onNext, onMenu }) {
+  const isChug = slurker === "Chug";
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
       {/* Sint ansikt */}
@@ -37,9 +39,11 @@ export default function ResultView({ slurker, onNext, onMenu }) {
           <p className="font-display text-5xl font-bold text-gray-900">
             {slurker}
           </p>
-          <p className="mt-1 font-body text-lg text-gray-500">
-            {slurker === 1 ? "slurk" : "slurker"} 🍺
-          </p>
+          {!isChug && (
+            <p className="mt-1 font-body text-lg text-gray-500">
+              {slurker === 1 ? "slurk" : "slurker"} 🍺
+            </p>
+          )}
         </div>
       </div>
 

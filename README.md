@@ -52,4 +52,6 @@ npm run build
 
 ## 📄 Lisens
 
-MIT
+Copyright (c) 2026 Torbjørn Hagland og Daniyal Chaudhry. Alle rettigheter reservert.
+
+Koden, designet, spillkonseptet, tekstene, illustrasjonene og andre filer i dette repoet kan ikke kopieres, endres, distribueres, publiseres eller brukes uten skriftlig tillatelse fra rettighetshaverne.

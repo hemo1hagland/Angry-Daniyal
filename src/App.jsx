@@ -2,12 +2,15 @@ import { useState } from "react";
 import Landing from "./screens/Landing";
 import FaceGame from "./screens/FaceGame";
 import ResultView from "./screens/ResultView";
+import GameMenu from "./screens/GameMenu";
+import HorseRace from "./screens/HorseRace";
 
 export default function App() {
-  const [screen, setScreen] = useState("landing");
+  const [screen, setScreen] = useState("menu");
   const [antall, setAntall] = useState(16);
   const [slurker, setSlurker] = useState(2);
   const [runde, setRunde] = useState(0);
+  const appWidth = screen === "horse" ? "max-w-5xl" : "max-w-md";
 
   const startSpill = (valgtAntall, valgtSlurker) => {
     setAntall(valgtAntall);
@@ -22,9 +25,16 @@ export default function App() {
   };
 
   return (
-    <div className="relative mx-auto min-h-screen w-full max-w-md overflow-hidden bg-white font-body">
+    <div className={`relative mx-auto min-h-screen w-full ${appWidth} overflow-hidden bg-white font-body`}>
+      {screen === "menu" && (
+        <GameMenu
+          onFaceGame={() => setScreen("landing")}
+          onHorseRace={() => setScreen("horse")}
+        />
+      )}
+
       {screen === "landing" && (
-        <Landing onStart={startSpill} />
+        <Landing onStart={startSpill} onBack={() => setScreen("menu")} />
       )}
 
       {screen === "game" && (
@@ -42,6 +52,10 @@ export default function App() {
           onNext={nyRunde}
           onMenu={() => setScreen("landing")}
         />
+      )}
+
+      {screen === "horse" && (
+        <HorseRace onBack={() => setScreen("menu")} />
       )}
     </div>
   );

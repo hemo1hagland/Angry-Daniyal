@@ -2,14 +2,21 @@ import { useState } from "react";
 import Button from "../components/Button";
 
 const GRID_VALG = [9, 16, 25, 36];
-const SLURK_VALG = [1, 2, 3, 5, 10];
+const SLURK_VALG = [1, 2, 3, 5, "Chug"];
 
-export default function Landing({ onStart }) {
+export default function Landing({ onStart, onBack }) {
   const [antall, setAntall] = useState(16);
   const [slurker, setSlurker] = useState(2);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
+      <button
+        onClick={onBack}
+        className="absolute left-5 top-6 rounded-full bg-gray-100 px-4 py-2 font-body text-sm text-gray-500 transition-all duration-200 hover:bg-gray-200 active:scale-[0.95]"
+      >
+        ← Meny
+      </button>
+
       {/* Logo */}
       <h1 className="mb-6 font-display text-8xl font-bold tracking-tighter text-gray-900">
         Vors
@@ -70,8 +77,8 @@ export default function Landing({ onStart }) {
         </Button>
       </div>
 
-      <p className="mt-16 font-body text-xs uppercase tracking-[0.3em] text-gray-300">
-        Vors · partyspill
+      <p className="mt-16 max-w-xs font-body text-xs leading-relaxed text-gray-300">
+        Spill utviklet av Torbjørn Hagland og Daniyal Chaudhry. Alle rettigheter reservert.
       </p>
     </div>
   );
