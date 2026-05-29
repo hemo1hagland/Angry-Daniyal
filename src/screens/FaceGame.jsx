@@ -36,7 +36,7 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
   const cols = COLS[antall] || 4;
 
   return (
-    <div className="flex min-h-screen flex-col px-5 py-8">
+    <div className="flex min-h-[100dvh] flex-col px-5 py-8">
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={onBack}

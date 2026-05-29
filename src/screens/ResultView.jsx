@@ -5,7 +5,7 @@ export default function ResultView({ slurker, onNext, onMenu }) {
   const isChug = slurker === "Chug";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
       {/* Sint ansikt */}
       <div className="mb-6 animate-burst">
         <div className="mx-auto h-28 w-28 overflow-hidden rounded-3xl bg-red-50 ring-2 ring-red-300/40 shadow-[0_0_30px_-6px_rgba(239,68,68,0.3)]">

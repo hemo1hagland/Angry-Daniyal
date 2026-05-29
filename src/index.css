@@ -14,11 +14,40 @@ html, body, #root {
 
 body {
   margin: 0;
-  background: #ffffff;
+  background: #f3f4f6;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;
   overscroll-behavior: none;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+.phone-shell {
+  height: 100dvh;
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+}
+
+@supports not (height: 100dvh) {
+  .phone-shell {
+    height: 100vh;
+    min-height: 100vh;
+  }
 }
 
 @keyframes cardFlip {

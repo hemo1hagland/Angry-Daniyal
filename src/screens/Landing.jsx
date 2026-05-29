@@ -9,7 +9,7 @@ export default function Landing({ onStart, onBack }) {
   const [slurker, setSlurker] = useState(2);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
       <button
         onClick={onBack}
         className="absolute left-5 top-6 rounded-full bg-gray-100 px-4 py-2 font-body text-sm text-gray-500 transition-all duration-200 hover:bg-gray-200 active:scale-[0.95]"

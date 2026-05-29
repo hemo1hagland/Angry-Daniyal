@@ -153,7 +153,7 @@ function HorsePiece({ suit }) {
     <img
       src={suit.horseAsset}
       alt=""
-      className="h-auto w-9 select-none drop-shadow-sm sm:w-12 lg:w-14"
+      className="h-auto w-10 select-none drop-shadow-sm"
       draggable="false"
     />
   );
@@ -161,7 +161,7 @@ function HorsePiece({ suit }) {
 
 function StageCard({ card }) {
   const isLying = card.orientation === "lying";
-  const cardSize = isLying ? "h-6 w-11 sm:h-8 sm:w-14" : "h-10 w-6 sm:h-14 sm:w-9";
+  const cardSize = isLying ? "h-6 w-11" : "h-10 w-6";
 
   return (
     <div
@@ -170,7 +170,7 @@ function StageCard({ card }) {
     >
       {card.revealed ? (
         <span
-          className="flex h-full w-full items-center justify-center rounded-lg bg-white text-sm leading-none shadow-md ring-1 ring-gray-200 sm:text-base"
+          className="flex h-full w-full items-center justify-center rounded-lg bg-white text-sm leading-none shadow-md ring-1 ring-gray-200"
           style={{ color: card.color }}
         >
           {card.rank}
@@ -190,11 +190,11 @@ function StageCard({ card }) {
 
 function RaceTrack({ positions, movingSuit, backwardSuit, stageCards }) {
   return (
-    <div className="relative mx-auto h-[min(50vh,410px)] min-h-[315px] w-full max-w-[440px] overflow-visible sm:h-[min(calc(100vh-190px),620px)] sm:min-h-[420px] sm:max-w-[620px]">
+    <div className="relative mx-auto h-[min(43dvh,360px)] min-h-[285px] w-full max-w-[430px] overflow-visible">
       <img
         src="/assets/horserace/long-track-board.png"
         alt=""
-        className="absolute bottom-0 left-0 top-0 h-full w-[calc(100%-54px)] select-none object-fill sm:w-[calc(100%-68px)]"
+        className="absolute bottom-0 left-0 top-0 h-full w-[calc(100%-54px)] select-none object-fill"
         draggable="false"
       />
 
@@ -203,14 +203,14 @@ function RaceTrack({ positions, movingSuit, backwardSuit, stageCards }) {
         return (
           <div
             key={`label-${suit.id}`}
-            className="absolute z-30 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full bg-white/90 font-display font-bold shadow-sm ring-1 ring-gray-200 backdrop-blur sm:h-8 sm:w-8"
+            className="absolute z-30 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full bg-white/90 font-display font-bold shadow-sm ring-1 ring-gray-200 backdrop-blur"
             style={{
               left: `${labelPoint.x}%`,
-              top: "-30px",
+              top: "-26px",
             }}
             title={suit.name}
           >
-            <span className="text-base leading-none sm:text-lg" style={{ color: suit.color }}>
+            <span className="text-base leading-none" style={{ color: suit.color }}>
               {suit.symbol}
             </span>
           </div>
@@ -221,7 +221,7 @@ function RaceTrack({ positions, movingSuit, backwardSuit, stageCards }) {
         return (
           <div
             key={`${card.field}-${card.rank}-${card.suit}`}
-            className="absolute right-0 z-30 flex w-12 -translate-y-1/2 justify-center sm:w-16"
+            className="absolute right-0 z-30 flex w-11 -translate-y-1/2 justify-center"
             style={{ top: `${COURSE_CARD_POINTS[card.field]}%` }}
           >
             <StageCard card={card} />
@@ -257,7 +257,7 @@ function RaceTrack({ positions, movingSuit, backwardSuit, stageCards }) {
 
 function CardFace({ card, empty = false }) {
   return (
-    <div className="flex h-16 w-11 flex-col items-center justify-between rounded-xl bg-white p-1.5 font-display font-bold shadow-sm ring-1 ring-gray-200 sm:h-20 sm:w-14 sm:p-2">
+    <div className="flex h-16 w-11 flex-col items-center justify-between rounded-xl bg-white p-1.5 font-display font-bold shadow-sm ring-1 ring-gray-200">
       {empty ? (
         <img
           src="/assets/horserace/card-back-standing.png"
@@ -267,13 +267,13 @@ function CardFace({ card, empty = false }) {
         />
       ) : (
         <>
-          <span className="self-start text-xs sm:text-sm" style={{ color: card.color }}>
+          <span className="self-start text-xs" style={{ color: card.color }}>
             {card.rank}
           </span>
-          <span className="text-2xl leading-none sm:text-3xl" style={{ color: card.color }}>
+          <span className="text-2xl leading-none" style={{ color: card.color }}>
             {card.symbol}
           </span>
-          <span className="self-end rotate-180 text-xs sm:text-sm" style={{ color: card.color }}>
+          <span className="self-end rotate-180 text-xs" style={{ color: card.color }}>
             {card.rank}
           </span>
         </>
@@ -285,27 +285,27 @@ function CardFace({ card, empty = false }) {
 function DeckStack({ count }) {
   return (
     <div className="relative flex flex-col items-center">
-      <div className="relative h-16 w-11 sm:h-20 sm:w-14">
+      <div className="relative h-16 w-11">
         <img
           src="/assets/horserace/card-back-standing.png"
           alt=""
-          className="absolute left-1.5 top-1.5 h-16 w-11 object-contain opacity-45 sm:left-2 sm:top-2 sm:h-20 sm:w-14"
+          className="absolute left-1.5 top-1.5 h-16 w-11 object-contain opacity-45"
           draggable="false"
         />
         <img
           src="/assets/horserace/card-back-standing.png"
           alt=""
-          className="absolute left-1 top-1 h-16 w-11 object-contain opacity-75 sm:h-20 sm:w-14"
+          className="absolute left-1 top-1 h-16 w-11 object-contain opacity-75"
           draggable="false"
         />
         <img
           src="/assets/horserace/card-back-standing.png"
           alt=""
-          className="absolute left-0 top-0 h-16 w-11 object-contain drop-shadow-md sm:h-20 sm:w-14"
+          className="absolute left-0 top-0 h-16 w-11 object-contain drop-shadow-md"
           draggable="false"
         />
       </div>
-      <span className="mt-1 whitespace-nowrap font-body text-[11px] text-gray-400 sm:mt-2 sm:text-xs">
+      <span className="mt-1 whitespace-nowrap font-body text-[11px] text-gray-400">
         {count} igjen
       </span>
     </div>
@@ -370,13 +370,13 @@ function SuitButton({ suit, selected, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-2xl px-3 py-3 font-display text-base font-bold shadow-sm ring-1 transition active:scale-[0.97] sm:px-4 sm:py-4 sm:text-lg ${
+      className={`rounded-2xl px-3 py-3 font-display text-base font-bold shadow-sm ring-1 transition active:scale-[0.97] ${
         selected
           ? "bg-slate-900 text-white ring-slate-900"
           : "bg-white text-slate-900 ring-gray-200"
       }`}
     >
-      <span className="mr-2 text-3xl align-middle sm:mr-3 sm:text-4xl" style={{ color: selected ? "#fff" : suit.color }}>
+      <span className="mr-2 text-3xl align-middle" style={{ color: selected ? "#fff" : suit.color }}>
         {suit.symbol}
       </span>
       {suit.name}
@@ -404,52 +404,6 @@ function PlayerRow({ player, onRemove }) {
       >
         Fjern
       </button>
-    </div>
-  );
-}
-
-function BetSummary({ players, compact = false }) {
-  if (!players.length) {
-    return (
-      <div className="rounded-3xl bg-gray-50 p-5 text-center ring-1 ring-gray-200">
-        <p className="font-body text-sm text-gray-500">
-          Ingen spillere lagt inn ennå.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`rounded-3xl bg-gray-50 p-4 ring-1 ring-gray-200 ${compact ? "" : "mt-5"}`}>
-      <div className="mb-3 flex items-center justify-between">
-        <p className="font-body text-sm font-bold uppercase tracking-[0.18em] text-gray-400">
-          Satser
-        </p>
-        <p className="font-body text-sm font-bold text-gray-500">
-          {players.reduce((sum, player) => sum + player.bet, 0)} slurker
-        </p>
-      </div>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {players.map((player) => {
-          const suit = suitById(player.suit);
-          return (
-            <div
-              key={player.id}
-              className="flex items-center justify-between gap-2 rounded-2xl bg-white px-3 py-3 text-left shadow-sm ring-1 ring-gray-200"
-            >
-              <div className="min-w-0">
-                <p className="truncate font-display text-base font-bold text-slate-900">{player.name}</p>
-                <p className="font-body text-sm text-gray-500">
-                  {player.bet} slurker på{" "}
-                  <span className="font-bold" style={{ color: suit.color }}>
-                    {suit.symbol} {suit.name}
-                  </span>
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -604,7 +558,7 @@ export default function HorseRace({ onBack }) {
   const [winner, setWinner] = useState(null);
   const [autoPlay, setAutoPlay] = useState(false);
   const [autoSpeed, setAutoSpeed] = useState(1);
-  const [soundOn, setSoundOn] = useState(true);
+  const [soundOn, setSoundOn] = useState(false);
   const [volume, setVolume] = useState(0.45);
 
   const selected = suitById(selectedSuit);
@@ -628,26 +582,12 @@ export default function HorseRace({ onBack }) {
     setPlayers((current) => current.filter((player) => player.id !== id));
   };
 
-  const playRaceMusic = async (restart = false) => {
-    const audio = audioRef.current;
-    if (!audio || !soundOn) return;
-
-    audio.volume = volume;
-    audio.muted = false;
-    if (restart) audio.currentTime = 0;
-
-    try {
-      await audio.play();
-    } catch {
-      setSoundOn(false);
-    }
-  };
-
   const pauseRaceMusic = () => {
     audioRef.current?.pause();
   };
 
   const prepareRace = () => {
+    pauseRaceMusic();
     setRaceCards(newRaceDeck());
     setPositions(initialPositions());
     setLastCard(null);
@@ -655,12 +595,12 @@ export default function HorseRace({ onBack }) {
     setBackwardSuit(null);
     setWinner(null);
     setAutoPlay(false);
+    setSoundOn(false);
   };
 
   const startRace = () => {
     if (!players.length) return;
     prepareRace();
-    playRaceMusic(true);
     setPhase("race");
   };
 
@@ -748,8 +688,8 @@ export default function HorseRace({ onBack }) {
 
   if (phase === "bet") {
     return (
-      <div className="flex h-screen flex-col overflow-hidden bg-white px-3 py-2 text-center sm:min-h-screen sm:overflow-visible sm:px-5 sm:py-8">
-        <div className="mb-2 flex shrink-0 items-center justify-between sm:mb-5">
+      <div className="flex h-[100dvh] flex-col overflow-hidden bg-white px-3 py-2 text-center">
+        <div className="mb-2 flex shrink-0 items-center justify-between">
           <button
             onClick={onBack}
             className="rounded-full bg-gray-100 px-4 py-2 font-body text-sm text-gray-500 transition active:scale-[0.95]"
@@ -761,15 +701,15 @@ export default function HorseRace({ onBack }) {
           </span>
         </div>
 
-        <h1 className="shrink-0 font-display text-4xl font-bold tracking-tighter text-slate-900 sm:text-6xl">
+        <h1 className="shrink-0 font-display text-4xl font-bold tracking-tighter text-slate-900">
           Veddeløpet
         </h1>
-        <p className="mx-auto mt-1 shrink-0 max-w-sm font-body text-sm text-slate-500 sm:mt-2 sm:text-base">
+        <p className="mx-auto mt-1 shrink-0 max-w-sm font-body text-sm text-slate-500">
           Legg inn hvem som satser på hva.
         </p>
 
-        <div className="mt-3 shrink-0 rounded-3xl bg-gray-50 p-3 text-left ring-1 ring-gray-200 sm:mt-6 sm:p-4">
-          <div className="grid gap-2.5 sm:gap-4">
+        <div className="mt-3 shrink-0 rounded-3xl bg-gray-50 p-3 text-left ring-1 ring-gray-200">
+          <div className="grid gap-2.5">
             <div>
               <label className="font-body text-xs font-bold uppercase tracking-[0.18em] text-gray-400" htmlFor="horse-player-name">
                 Spiller
@@ -779,12 +719,12 @@ export default function HorseRace({ onBack }) {
                 value={playerName}
                 onChange={(event) => setPlayerName(event.target.value)}
                 placeholder={`Spiller ${players.length + 1}`}
-                className="mt-2 w-full rounded-2xl bg-white px-4 py-3 font-display text-lg font-bold text-slate-900 outline-none ring-1 ring-gray-200 placeholder:text-gray-300 focus:ring-slate-900 sm:py-4"
+                className="mt-2 w-full rounded-2xl bg-white px-4 py-3 font-display text-lg font-bold text-slate-900 outline-none ring-1 ring-gray-200 placeholder:text-gray-300 focus:ring-slate-900"
               />
             </div>
 
             <div>
-              <p className="mb-1.5 font-body text-xs font-bold uppercase tracking-[0.18em] text-gray-400 sm:mb-2">
+              <p className="mb-1.5 font-body text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
                 Hest
               </p>
               <div className="grid grid-cols-2 gap-2">
@@ -800,7 +740,7 @@ export default function HorseRace({ onBack }) {
             </div>
 
             <div>
-              <p className="mb-1.5 font-body text-xs font-bold uppercase tracking-[0.18em] text-gray-400 sm:mb-2">
+              <p className="mb-1.5 font-body text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
                 Slurker
               </p>
               <div className="grid grid-cols-5 gap-2">
@@ -808,7 +748,7 @@ export default function HorseRace({ onBack }) {
                   <button
                     key={option}
                     onClick={() => setBet(option)}
-                    className={`rounded-xl py-2.5 font-display text-lg font-bold transition active:scale-[0.95] sm:py-3 ${
+                    className={`rounded-xl py-2.5 font-display text-lg font-bold transition active:scale-[0.95] ${
                       bet === option
                         ? "bg-slate-900 text-white"
                         : "bg-white text-gray-500 ring-1 ring-gray-200"
@@ -820,20 +760,20 @@ export default function HorseRace({ onBack }) {
               </div>
             </div>
 
-            <Button onClick={addPlayer} variant="secondary" className="py-3 text-base sm:py-4 sm:text-lg">
+            <Button onClick={addPlayer} variant="secondary" className="py-3 text-base">
               Legg til: {playerName.trim() || `Spiller ${players.length + 1}`} · {selected.symbol} {selected.name} · {bet}
             </Button>
           </div>
         </div>
 
-        <div className="mt-3 sm:mt-4">
-          <Button onClick={startRace} disabled={!players.length} className="py-3 text-base sm:py-4 sm:text-lg">
+        <div className="mt-3">
+          <Button onClick={startRace} disabled={!players.length} className="py-3 text-base">
             Start løp ({players.length} spillere)
           </Button>
         </div>
 
         {players.length > 0 && (
-          <div className="mt-3 min-h-0 flex-1 overflow-y-auto rounded-3xl bg-gray-50 p-3 ring-1 ring-gray-200 sm:mt-5 sm:max-h-none sm:flex-none sm:p-4">
+          <div className="mt-3 min-h-0 flex-1 overflow-y-auto rounded-3xl bg-gray-50 p-3 ring-1 ring-gray-200">
             <div className="mb-3 flex items-center justify-between">
               <p className="font-body text-sm font-bold uppercase tracking-[0.18em] text-gray-400">
                 Satser
@@ -852,23 +792,23 @@ export default function HorseRace({ onBack }) {
   }
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-white px-3 py-2 text-center sm:px-4 sm:py-3">
-      <div className="flex shrink-0 items-center justify-between gap-2">
+    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-white px-3 py-2 text-center">
+      <div className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">
         <button
           onClick={reset}
-          className="rounded-full bg-gray-100 px-4 py-2 font-body text-sm text-gray-500 transition active:scale-[0.95]"
+          className="rounded-full bg-gray-100 px-3 py-2 font-body text-xs text-gray-500 transition active:scale-[0.95]"
         >
           ← Innsats
         </button>
-        <h1 className="font-display text-2xl font-bold tracking-tighter text-slate-900 sm:text-3xl">
+        <h1 className="min-w-0 truncate font-display text-xl font-bold tracking-tighter text-slate-900">
           Veddeløpet
         </h1>
-        <span className="whitespace-nowrap font-body text-[10px] uppercase tracking-[0.18em] text-gray-400 sm:text-xs sm:tracking-[0.25em]">
-          {players.length} spillere · {totalPot} slurker
+        <span className="whitespace-nowrap rounded-full bg-gray-50 px-2 py-1.5 font-body text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400 ring-1 ring-gray-200">
+          {players.length} · {totalPot}
         </span>
       </div>
 
-      <div className="mb-2 mt-10 grid min-h-0 flex-1 items-start gap-2 md:grid-cols-[minmax(0,640px)_230px] md:justify-center sm:mb-3 sm:mt-12 sm:gap-4">
+      <div className="mb-2 mt-8 grid min-h-0 flex-1 items-start gap-2">
         <RaceTrack
           positions={positions}
           movingSuit={movingSuit}
@@ -876,8 +816,8 @@ export default function HorseRace({ onBack }) {
           stageCards={stageCards}
         />
 
-        <div className="min-h-0 space-y-2 rounded-2xl bg-gray-50 p-2 ring-1 ring-gray-200 sm:p-3">
-          <Button onClick={winner ? reset : drawCard} disabled={Boolean(movingSuit)} className="py-3 text-base sm:text-base">
+        <div className="min-h-0 space-y-2 rounded-2xl bg-gray-50 p-2 ring-1 ring-gray-200">
+          <Button onClick={winner ? reset : drawCard} disabled={Boolean(movingSuit)} className="py-3 text-base">
             {winner ? "Spill på nytt" : movingSuit ? "Flytter..." : "Trekk kort"}
           </Button>
 
@@ -932,27 +872,28 @@ export default function HorseRace({ onBack }) {
               }}
               onVolumeChange={(nextVolume) => {
                 setVolume(nextVolume);
-                setSoundOn(nextVolume > 0);
-                if (nextVolume > 0 && phase === "race") {
+                if (soundOn && nextVolume > 0 && phase === "race") {
                   const audio = audioRef.current;
                   if (audio) {
                     audio.volume = nextVolume;
                     audio.muted = false;
                     audio.play().catch(() => setSoundOn(false));
                   }
+                } else if (nextVolume === 0) {
+                  audioRef.current?.pause();
                 }
               }}
             />
           </div>
 
           <div>
-            <div className="flex items-start justify-center gap-4 pb-2 md:flex-row md:items-start sm:gap-4">
+            <div className="flex items-start justify-center gap-4 pb-2">
               <DeckStack count={drawDeck.length} />
               {lastCard ? <CardFace card={lastCard} /> : <CardFace empty />}
             </div>
 
             {winner && (
-              <p className="mx-auto max-w-lg rounded-xl bg-white px-3 py-2 font-body text-xs font-semibold leading-snug text-slate-700 ring-1 ring-gray-200 sm:text-sm">
+              <p className="mx-auto max-w-lg rounded-xl bg-white px-3 py-2 font-body text-xs font-semibold leading-snug text-slate-700 ring-1 ring-gray-200">
                 Resultatet vises nå.
               </p>
             )}

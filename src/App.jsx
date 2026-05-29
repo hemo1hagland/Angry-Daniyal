@@ -4,13 +4,15 @@ import FaceGame from "./screens/FaceGame";
 import ResultView from "./screens/ResultView";
 import GameMenu from "./screens/GameMenu";
 import HorseRace from "./screens/HorseRace";
+import PubGolf from "./screens/PubGolf";
+import SpinWheel from "./screens/SpinWheel";
 
 export default function App() {
   const [screen, setScreen] = useState("menu");
   const [antall, setAntall] = useState(16);
   const [slurker, setSlurker] = useState(2);
   const [runde, setRunde] = useState(0);
-  const appWidth = screen === "horse" ? "max-w-5xl" : "max-w-md";
+  const appWidth = "max-w-md";
 
   const startSpill = (valgtAntall, valgtSlurker) => {
     setAntall(valgtAntall);
@@ -25,11 +27,13 @@ export default function App() {
   };
 
   return (
-    <div className={`relative mx-auto min-h-screen w-full ${appWidth} overflow-hidden bg-white font-body`}>
+    <div className={`phone-shell relative mx-auto w-full ${appWidth} overflow-hidden bg-white font-body`}>
       {screen === "menu" && (
         <GameMenu
           onFaceGame={() => setScreen("landing")}
           onHorseRace={() => setScreen("horse")}
+          onPubGolf={() => setScreen("pubgolf")}
+          onSpinWheel={() => setScreen("wheel")}
         />
       )}
 
@@ -56,6 +60,14 @@ export default function App() {
 
       {screen === "horse" && (
         <HorseRace onBack={() => setScreen("menu")} />
+      )}
+
+      {screen === "pubgolf" && (
+        <PubGolf onBack={() => setScreen("menu")} />
+      )}
+
+      {screen === "wheel" && (
+        <SpinWheel onBack={() => setScreen("menu")} />
       )}
     </div>
   );
