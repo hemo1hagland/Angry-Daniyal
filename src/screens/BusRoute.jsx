@@ -11,6 +11,8 @@ const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 const FACE_RANKS = ["J", "Q", "K"];
 const ROW_COUNT = 5;
 const PYRAMID_CARD_COUNT = 15;
+const DEAL_DELAY_MS = 26;
+const DEAL_DONE_MS = 1050;
 
 const makeId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
@@ -82,11 +84,11 @@ function PlayingCard({ card, onClick, dealIndex, dealing, disabled }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`grid h-[78px] w-[52px] shrink-0 touch-manipulation place-items-center rounded-2xl bg-white font-display font-bold shadow-md ring-1 ring-gray-200 transition active:scale-95 disabled:cursor-default disabled:active:scale-100 min-[390px]:h-[84px] min-[390px]:w-14 ${
+      className={`grid h-[78px] w-[60px] shrink-0 touch-manipulation place-items-center rounded-2xl bg-white font-display font-bold shadow-sm ring-1 ring-gray-200 transition will-change-transform active:scale-95 disabled:cursor-default disabled:active:scale-100 min-[390px]:h-[84px] min-[390px]:w-16 ${
         dealing ? "animate-cardDeal" : ""
       } ${card.failed ? "ring-2 ring-red-400" : ""}`}
       style={{
-        animationDelay: `${dealIndex * 55}ms`,
+        animationDelay: `${dealIndex * DEAL_DELAY_MS}ms`,
         "--deal-x": card.dealX,
         "--deal-y": card.dealY,
         "--deal-rotate": card.dealRotate,
@@ -97,7 +99,7 @@ function PlayingCard({ card, onClick, dealIndex, dealing, disabled }) {
         <img
           src={faceImage}
           alt={`${card.rank}${card.symbol}`}
-          className="h-full w-full rounded-2xl object-fill"
+          className="h-full w-full rounded-2xl object-cover"
           draggable="false"
         />
       ) : card.revealed ? (
@@ -130,10 +132,13 @@ function PlayingCard({ card, onClick, dealIndex, dealing, disabled }) {
 export default function BusRoute({ onBack }) {
   const [game, setGame] = useState(() => createGame());
   const [lastCard, setLastCard] = useState(null);
+  const [activeRowIndex, setActiveRowIndex] = useState(ROW_COUNT - 1);
+  const [outcome, setOutcome] = useState(null);
   const [dealKey, setDealKey] = useState(0);
   const [dealing, setDealing] = useState(false);
   const timersRef = useRef([]);
   const rows = game.rows;
+  const activeRow = rows[activeRowIndex];
 
   useEffect(
     () => () => {
@@ -158,31 +163,17 @@ export default function BusRoute({ onBack }) {
     setDealKey((key) => key + 1);
     setDealing(true);
     setLastCard(status);
-    queueTimer(() => setDealing(false), 1700);
+    setOutcome(null);
+    setActiveRowIndex(ROW_COUNT - 1);
+    queueTimer(() => setDealing(false), DEAL_DONE_MS);
   };
 
   const toggleCard = (rowId, cardId) => {
-    if (dealing) return;
+    if (dealing || outcome) return;
 
-    const rowToFlip = rows.find((row) => row.id === rowId);
+    const rowToFlip = rows[activeRowIndex];
     const cardToFlip = rowToFlip?.cards.find((card) => card.id === cardId);
-    if (!rowToFlip || !cardToFlip) return;
-
-    if (cardToFlip.revealed) {
-      setGame((currentGame) => ({
-        ...currentGame,
-        rows: currentGame.rows.map((row) => ({
-          ...row,
-          cards: row.cards.map((card) => {
-            if (row.id !== rowId || card.id !== cardId) return card;
-            return { ...card, revealed: false, failed: false };
-          }),
-        })),
-      }));
-
-      if (lastCard?.id === cardToFlip.id) setLastCard(null);
-      return;
-    }
+    if (!rowToFlip || rowToFlip.id !== rowId || !cardToFlip || cardToFlip.revealed) return;
 
     const failed = FACE_RANKS.includes(cardToFlip.rank);
     const flipped = { ...cardToFlip, rowSips: rowToFlip.sips, failed };
@@ -202,23 +193,31 @@ export default function BusRoute({ onBack }) {
 
     if (failed) {
       if (navigator.vibrate) navigator.vibrate([50, 35, 90]);
-      queueTimer(() => {
-        dealNewCards({ ...flipped, redealt: true }, false);
-      }, 1650);
-    } else if (navigator.vibrate) {
-      navigator.vibrate(25);
+      setOutcome("lost");
+      return;
+    }
+
+    if (navigator.vibrate) navigator.vibrate(25);
+    if (activeRowIndex === 0) {
+      setOutcome("won");
+    } else {
+      setActiveRowIndex((index) => index - 1);
     }
   };
 
   const reset = () => {
     dealNewCards(null, true, true);
   };
-  const warningText = lastCard?.failed
-    ? lastCard.redealt
-      ? `Feil: ${lastCard.rank}${lastCard.symbol}. Drikk ${lastCard.rowSips} slurker. Nye kort er lagt ut.`
-      : `Feil: ${lastCard.rank}${lastCard.symbol} er bildekort. Drikk ${lastCard.rowSips} slurker.`
-    : "";
-  const helperText = dealing ? "Legger ut nye kort..." : warningText;
+  const resultTitle = outcome === "lost" ? "You lost" : outcome === "won" ? "Du vant!" : "";
+  const resultText =
+    outcome === "lost"
+      ? `${lastCard?.rank ?? ""}${lastCard?.symbol ?? ""} er bildekort. Drikk ${
+          lastCard?.rowSips ?? ""
+        } slurker.`
+      : outcome === "won"
+        ? "Du kom til toppen uten bildekort."
+        : "";
+  const helperText = dealing ? "Legger ut kort..." : !outcome ? `Velg ett kort på ${activeRow?.sips ?? 0} sl.` : "";
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-white px-3 py-3 text-center">
@@ -239,20 +238,40 @@ export default function BusRoute({ onBack }) {
       </h1>
 
       {helperText ? (
-        <div
-          className={`mt-2 shrink-0 rounded-2xl px-4 py-3 font-body text-sm font-bold ${
-            warningText ? "bg-red-500 text-white" : "bg-gray-100 text-gray-500"
-          }`}
-        >
+        <div className="mt-2 shrink-0 rounded-2xl bg-gray-100 px-4 py-2.5 font-body text-sm font-bold text-gray-500">
           {helperText}
         </div>
       ) : null}
 
+      {outcome ? (
+        <div
+          className={`mt-2 shrink-0 rounded-[26px] px-4 py-4 text-white ${
+            outcome === "lost" ? "bg-red-500" : "bg-emerald-500"
+          }`}
+        >
+          <p className="font-display text-3xl font-bold tracking-tighter">{resultTitle}</p>
+          <p className="mt-1 font-body text-sm font-bold opacity-85">{resultText}</p>
+        </div>
+      ) : null}
+
       <div className="mt-3 min-h-0 flex-1 overflow-y-auto rounded-[30px] bg-gray-50 px-2 py-3 ring-1 ring-gray-200">
-        <div className="grid gap-2.5">
+        <div className="grid gap-2">
           {rows.map((row, rowIndex) => (
-            <div key={row.id} className="grid grid-cols-[38px_1fr] items-center gap-2">
-              <p className="rounded-full bg-white px-1 py-2 text-center font-body text-[11px] font-bold text-gray-400 ring-1 ring-gray-200">
+            <div
+              key={row.id}
+              className={`relative flex justify-center rounded-2xl py-1 transition ${
+                !outcome && rowIndex === activeRowIndex ? "bg-white ring-1 ring-slate-900/10" : ""
+              } ${
+                !outcome && rowIndex !== activeRowIndex && !row.cards.some((card) => card.revealed)
+                  ? "opacity-45"
+                  : ""
+              }`}
+            >
+              <p
+                className={`absolute left-1 top-1/2 -translate-y-1/2 rounded-full px-2 py-1.5 text-center font-body text-[11px] font-bold ring-1 ring-gray-200 ${
+                  !outcome && rowIndex === activeRowIndex ? "bg-slate-900 text-white" : "bg-white text-gray-400"
+                }`}
+              >
                 {row.sips} sl.
               </p>
               <div className="flex justify-center gap-1.5 min-[390px]:gap-2">
@@ -263,14 +282,14 @@ export default function BusRoute({ onBack }) {
                       .reduce((sum, previousRow) => sum + previousRow.cards.length, 0) + cardIndex;
 
                   return (
-                  <PlayingCard
-                    key={`${dealKey}-${card.id}`}
-                    card={card}
-                    dealIndex={dealIndex}
-                    dealing={dealing}
-                    disabled={dealing}
-                    onClick={() => toggleCard(row.id, card.id)}
-                  />
+                    <PlayingCard
+                      key={`${dealKey}-${card.id}`}
+                      card={card}
+                      dealIndex={dealIndex}
+                      dealing={dealing}
+                      disabled={dealing || Boolean(outcome) || rowIndex !== activeRowIndex || card.revealed}
+                      onClick={() => toggleCard(row.id, card.id)}
+                    />
                   );
                 })}
               </div>
@@ -285,7 +304,7 @@ export default function BusRoute({ onBack }) {
           disabled={dealing}
           className="min-h-14 w-full touch-manipulation rounded-2xl bg-slate-900 px-4 py-4 font-display text-lg font-bold text-white active:scale-[0.97] disabled:opacity-50"
         >
-          Nye kort
+          {outcome ? "Spill på nytt" : "Nytt spill"}
         </button>
       </div>
     </div>

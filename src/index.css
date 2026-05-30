@@ -117,7 +117,7 @@ textarea {
 }
 
 .animate-cardDeal {
-  animation: cardDeal 0.72s cubic-bezier(0.2, 0.86, 0.28, 1.12) both;
+  animation: cardDeal 0.5s cubic-bezier(0.2, 0.86, 0.28, 1) both;
 }
 
 .animate-horseBob {

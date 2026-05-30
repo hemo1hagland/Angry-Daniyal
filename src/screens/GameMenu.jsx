@@ -12,14 +12,14 @@ export default function GameMenu({ onFaceGame, onHorseRace, onPubGolf, onSpinWhe
 
       <div className="w-full max-w-xs space-y-3">
         <Button onClick={onFaceGame}>Ansiktsspillet</Button>
-        <Button variant="secondary" onClick={onHorseRace}>
+        <Button variant="secondary" onClick={onBusRoute}>
+          Bussruta
+        </Button>
+        <Button onClick={onHorseRace}>
           Hesteløp
         </Button>
-        <Button onClick={onPubGolf}>Pubgolf</Button>
-        <Button variant="secondary" onClick={onSpinWheel}>
-          Spin wheel
-        </Button>
-        <Button onClick={onBusRoute}>Bussruta</Button>
+        <Button variant="secondary" onClick={onPubGolf}>Pubgolf</Button>
+        <Button onClick={onSpinWheel}>Spin wheel</Button>
       </div>
 
       <p className="mt-16 max-w-xs font-body text-xs leading-relaxed text-gray-300">
