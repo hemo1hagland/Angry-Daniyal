@@ -1,6 +1,6 @@
 import Button from "../components/Button";
 
-export default function GameMenu({ onFaceGame, onHorseRace, onPubGolf, onSpinWheel }) {
+export default function GameMenu({ onFaceGame, onHorseRace, onPubGolf, onSpinWheel, onBusRoute }) {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
       <h1 className="mb-4 font-display text-7xl font-bold tracking-tighter text-gray-900">
@@ -19,6 +19,7 @@ export default function GameMenu({ onFaceGame, onHorseRace, onPubGolf, onSpinWhe
         <Button variant="secondary" onClick={onSpinWheel}>
           Spin wheel
         </Button>
+        <Button onClick={onBusRoute}>Bussruta</Button>
       </div>
 
       <p className="mt-16 max-w-xs font-body text-xs leading-relaxed text-gray-300">

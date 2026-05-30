@@ -6,6 +6,7 @@ import GameMenu from "./screens/GameMenu";
 import HorseRace from "./screens/HorseRace";
 import PubGolf from "./screens/PubGolf";
 import SpinWheel from "./screens/SpinWheel";
+import BusRoute from "./screens/BusRoute";
 
 export default function App() {
   const [screen, setScreen] = useState("menu");
@@ -34,6 +35,7 @@ export default function App() {
           onHorseRace={() => setScreen("horse")}
           onPubGolf={() => setScreen("pubgolf")}
           onSpinWheel={() => setScreen("wheel")}
+          onBusRoute={() => setScreen("busroute")}
         />
       )}
 
@@ -68,6 +70,10 @@ export default function App() {
 
       {screen === "wheel" && (
         <SpinWheel onBack={() => setScreen("menu")} />
+      )}
+
+      {screen === "busroute" && (
+        <BusRoute onBack={() => setScreen("menu")} />
       )}
     </div>
   );
