@@ -84,7 +84,7 @@ function PlayingCard({ card, onClick, dealIndex, dealing, disabled }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`grid h-[78px] w-[60px] shrink-0 touch-manipulation place-items-center rounded-2xl bg-white font-display font-bold shadow-sm ring-1 ring-gray-200 transition will-change-transform active:scale-95 disabled:cursor-default disabled:active:scale-100 min-[390px]:h-[84px] min-[390px]:w-16 ${
+      className={`grid h-[78px] w-14 shrink-0 touch-manipulation place-items-center rounded-2xl bg-white font-display font-bold shadow-sm ring-1 ring-gray-200 transition will-change-transform active:scale-95 disabled:cursor-default disabled:active:scale-100 min-[390px]:h-[84px] min-[390px]:w-[58px] ${
         dealing ? "animate-cardDeal" : ""
       } ${card.failed ? "ring-2 ring-red-400" : ""}`}
       style={{
@@ -259,22 +259,13 @@ export default function BusRoute({ onBack }) {
           {rows.map((row, rowIndex) => (
             <div
               key={row.id}
-              className={`relative flex justify-center rounded-2xl py-1 transition ${
-                !outcome && rowIndex === activeRowIndex ? "bg-white ring-1 ring-slate-900/10" : ""
-              } ${
+              className={`flex justify-center transition ${
                 !outcome && rowIndex !== activeRowIndex && !row.cards.some((card) => card.revealed)
                   ? "opacity-45"
                   : ""
               }`}
             >
-              <p
-                className={`absolute left-1 top-1/2 -translate-y-1/2 rounded-full px-2 py-1.5 text-center font-body text-[11px] font-bold ring-1 ring-gray-200 ${
-                  !outcome && rowIndex === activeRowIndex ? "bg-slate-900 text-white" : "bg-white text-gray-400"
-                }`}
-              >
-                {row.sips} sl.
-              </p>
-              <div className="flex justify-center gap-1.5 min-[390px]:gap-2">
+              <div className="flex min-w-0 justify-center gap-1.5">
                 {row.cards.map((card, cardIndex) => {
                   const dealIndex =
                     rows
