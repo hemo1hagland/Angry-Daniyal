@@ -81,7 +81,7 @@ export const BONUS_CARDS = [
   { title: "Rett til Start", text: "Ta 3 slurker, flytt direkte til Start og få 300 ml tilbake i cashglasset.", effect: "start" },
   { title: "Cashpåfyll", text: "Ta 3 slurker og få 150 ml i cashglasset.", effect: "currency", currencyAmount: 3 },
   { title: "Mini-investering", text: "Ta 2 slurker og få 100 ml i cashglasset.", effect: "currency", currencyAmount: 2 },
-  { title: "Full tank", text: "Ta 5 slurker og fyll cashglasset til 500 ml.", effect: "refill" },
+  { title: "Full tank", text: "Ta 5 slurker og få 500 ml ekstra i cashglasset.", effect: "currency", currencyAmount: 10 },
   { title: "Random drink", text: "Gruppen velger tre vanlige ingredienser. Lag en liten, tilfeldig drink eller gå til Fyllarresten." },
   { title: "Nynn en sang", text: "Nynn en sang. Første spiller som gjetter riktig deler ut 2 slurker." },
   { title: "Vits eller arrest", text: "Fortell en vits. Ler ingen, går du til Fyllarresten." },

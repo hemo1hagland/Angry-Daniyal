@@ -179,12 +179,14 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
   const [winner, setWinner] = useState(null);
   const [tvMode, setTvMode] = useState(false);
   const [cashActivated, setCashActivated] = useState(false);
+  const [lastTransaction, setLastTransaction] = useState("5 slurker låser opp 500 ml cash");
 
   const currentPlayer = gamePlayers[currentIndex];
 
   const activateCash = () => {
     setGamePlayers((currentPlayers) => currentPlayers.map((player) => ({ ...player, currency: STARTING_CURRENCY })));
     setCashActivated(true);
+    setLastTransaction("Alle fikk 500 ml i cashglasset");
     setModal(null);
   };
 
@@ -316,6 +318,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     const nextOwnership = { ...ownership, [space.id]: { owner: currentIndex, houses: 0 } };
     setGamePlayers(nextPlayers);
     setOwnership(nextOwnership);
+    setLastTransaction(`${currentPlayer.name} betalte ${formatCash(space.cost)} til banken for ${space.shortName || space.name}`);
 
     if (completedNeighborhoods(currentIndex, nextOwnership).length >= WINNING_NEIGHBORHOODS) {
       declareWinner(nextPlayers[currentIndex]);
@@ -335,6 +338,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       ...ownership,
       [space.id]: { ...property, houses: property.houses + 1 },
     });
+    setLastTransaction(`${currentPlayer.name} betalte ${formatCash(upgradeCost)} til banken og bygde på ${space.shortName || space.name}`);
     finishPayment(nextPlayers);
   };
 
@@ -353,6 +357,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       index === currentIndex ? { ...player, currency: STARTING_CURRENCY } : player,
     );
     setGamePlayers(nextPlayers);
+    setLastTransaction(`${currentPlayer.name} tok 5 slurker og fylte 500 ml cash`);
     advanceTurn(nextPlayers);
   };
 
@@ -360,6 +365,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     const nextPlayers = gamePlayers.map((player, index) =>
       index === currentIndex ? { ...player, currency: Math.max(0, player.currency - amount) } : player,
     );
+    setLastTransaction(`${currentPlayer.name} betalte ${formatCash(amount)} til banken`);
     finishPayment(nextPlayers);
   };
 
@@ -369,6 +375,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       if (index === ownerIndex) return { ...player, currency: player.currency + amount };
       return player;
     });
+    setLastTransaction(`${currentPlayer.name} betalte ${formatCash(amount)} i leie til ${gamePlayers[ownerIndex].name}`);
     finishPayment(nextPlayers);
   };
 
@@ -377,23 +384,27 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     if (card.effect === "start") {
       nextPlayers = gamePlayers.map((player, index) =>
         index === currentIndex
-          ? { ...player, position: 0, currency: Math.min(MAX_CURRENCY, player.currency + START_REWARD) }
+          ? { ...player, position: 0, currency: player.currency + START_REWARD }
           : player,
       );
     } else if (card.effect === "currency") {
       nextPlayers = gamePlayers.map((player, index) =>
         index === currentIndex
-          ? { ...player, currency: Math.min(MAX_CURRENCY, player.currency + (card.currencyAmount || 1)) }
+          ? { ...player, currency: player.currency + (card.currencyAmount || 1) }
           : player,
       );
     } else if (card.effect === "refill") {
       nextPlayers = gamePlayers.map((player, index) =>
         index === currentIndex
-          ? { ...player, currency: MAX_CURRENCY }
+          ? { ...player, currency: Math.max(player.currency, MAX_CURRENCY) }
           : player,
       );
     }
     setGamePlayers(nextPlayers);
+    if (["start", "currency", "refill"].includes(card.effect)) {
+      const gain = nextPlayers[currentIndex].currency - gamePlayers[currentIndex].currency;
+      setLastTransaction(`${currentPlayer.name} fikk ${formatCash(gain)} fra bonuskortet`);
+    }
     advanceTurn(nextPlayers);
   };
 
@@ -419,15 +430,13 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
         }
       } else {
         const rent = space.buildable === false ? space.rent : Math.min(5, 1 + property.houses);
-        const transferAmount = Math.min(rent, MAX_CURRENCY - nextPlayers[property.owner].currency);
         setModal({
           type: "rent",
           space,
           owner: nextPlayers[property.owner],
           ownerIndex: property.owner,
           rent,
-          transferAmount,
-          canPay: nextPlayers[currentIndex].currency >= transferAmount,
+          canPay: nextPlayers[currentIndex].currency >= rent,
         });
       }
       return;
@@ -454,7 +463,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     } else if (space.type === "pause") {
       setModal({ type: "message", title: space.name, text: "Ingen kostnad og ingen straff. Turen går videre.", nextPlayers });
     } else {
-      setModal({ type: "message", title: "Start", text: "Få 300 ml tilbake i cashglasset, opptil maks 500 ml.", nextPlayers });
+      setModal({ type: "message", title: "Start", text: "Få 300 ml fra banken. Opptjent cash kan gå over 500 ml.", nextPlayers });
     }
   };
 
@@ -480,12 +489,13 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     let position = currentPlayer.position;
     for (let step = 0; step < result; step += 1) {
       position = (position + 1) % BOARD_SPACES.length;
+      if (position === 0) setLastTransaction(`${currentPlayer.name} passerte Start og fikk 300 ml fra banken`);
       nextPlayers = nextPlayers.map((player, index) =>
         index === currentIndex
           ? {
               ...player,
               position,
-              currency: position === 0 ? Math.min(MAX_CURRENCY, player.currency + START_REWARD) : player.currency,
+              currency: position === 0 ? player.currency + START_REWARD : player.currency,
             }
           : player,
       );
@@ -535,11 +545,11 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">4. Utesteder og hus</h3>
-              <p className="mt-1">Ledige steder betales til banken. Leie flyttes derimot direkte fra betaleren til eierens cashglass med nøyaktig beløp, opptil 500 ml. På egne fargesteder kan du bygge fire hus og deretter hotell.</p>
+              <p className="mt-1">Ledige steder betales til banken. Leie flyttes direkte fra betaleren til eieren med hele beløpet. Opptjent cash kan gå over 500 ml. På egne fargesteder kan du bygge fire hus og deretter hotell.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">5. Start og banken</h3>
-              <p className="mt-1">Hver gang brikken passerer eller lander på Start får du 300 ml tilbake. Ingen kan ha mer enn {formatCash(MAX_CURRENCY)} i cashglasset.</p>
+              <p className="mt-1">Hver gang brikken passerer eller lander på Start får du 300 ml fra banken. Cash kan gå over 500 ml, så leie og belønninger går aldri tapt.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">6. Bonusfelt</h3>
@@ -556,6 +566,10 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">9. Tomt cashglass</h3>
               <p className="mt-1">Når cashglasset når 0 ml stopper turen. Ta 5 slurker for å fylle det tilbake til 500 ml før spillet fortsetter.</p>
+            </section>
+            <section>
+              <h3 className="font-display text-base font-bold text-gray-900">10. Slik flyter cashen</h3>
+              <p className="mt-1">Kjøp, bygging og avgifter går til banken. Leie går direkte til eieren. Start, bonuskort og påfyll kommer fra banken. Siste transaksjon vises midt på brettet.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">Eierfarger</h3>
@@ -607,10 +621,9 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     }
 
     if (modal.type === "rent") {
-      const ownerIsFull = modal.transferAmount === 0;
       return (
-        <GameSheet eyebrow="Leie" title={ownerIsFull ? `${modal.owner.name} har fullt glass` : `${formatCash(modal.transferAmount)} til ${modal.owner.name}`} text={ownerIsFull ? "Ingen cash trekkes denne gangen." : `Vanlig leie er ${formatCash(modal.rent)}. Det trekkes aldri mer enn det er plass til i eierens cashglass.`}>
-          <Button disabled={!modal.canPay} onClick={() => payRent(modal.transferAmount, modal.ownerIndex)}>{ownerIsFull ? "Avslutt turen" : "Overfør leien"}</Button>
+        <GameSheet eyebrow="Leie" title={`${formatCash(modal.rent)} til ${modal.owner.name}`} text="Hele beløpet flyttes fra betaleren til eieren. Eierens cash kan gå over 500 ml.">
+          <Button disabled={!modal.canPay} onClick={() => payRent(modal.rent, modal.ownerIndex)}>Overfør leien</Button>
           <Button variant="secondary" onClick={declineDrinkPenalty}>Stå over</Button>
         </GameSheet>
       );
@@ -769,6 +782,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
           )}
           <p className={`mt-2 max-w-full truncate font-display font-bold ${tvMode ? "text-2xl" : "text-sm md:text-2xl"}`}>{currentPlayer.name}</p>
           <p className={`font-semibold text-gray-400 ${tvMode ? "text-sm" : "text-[10px] md:text-sm"}`}>{currentPlayer.piece.name} · {formatCash(currentPlayer.currency)} cash</p>
+          <p className={`mt-1 max-w-[280px] font-semibold leading-tight text-gray-500 ${tvMode ? "text-xs" : "text-[8px] md:text-xs"}`} aria-live="polite">Sist: {lastTransaction}</p>
           {rollAgainPrompt && <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-600">Dobbelt! Trill igjen</p>}
           {currentPlayer.inJail && <span className="mt-1 flex items-center gap-1 text-[10px] font-bold text-red-500"><Shield size={11} /> Fyllarresten</span>}
           <button onClick={rollDice} disabled={moving || !currentPlayer.active || Boolean(winner)} className="mt-3 flex min-h-10 w-full max-w-36 items-center justify-center gap-2 rounded-xl bg-gray-900 px-3 font-display text-sm font-bold text-white transition active:scale-95 disabled:opacity-40">
