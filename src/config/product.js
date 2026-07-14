@@ -107,7 +107,7 @@ export const GAMES = [
   },
   {
     id: "vorsbyen",
-    name: "Vorsbyen",
+    name: "Vorsopol",
     description: "Kjøp norske utesteder, bygg hus og vinn to komplette nabolag.",
     category: "choice",
     icon: "city",

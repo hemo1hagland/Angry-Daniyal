@@ -43,7 +43,7 @@ export default function App() {
   const [eventPack] = useState(getActiveEventPack);
   const [screen, setScreen] = useState(deepLinkedGame ? getStartScreen(deepLinkedGame) : "home");
   const [selectedGameId, setSelectedGameId] = useState(deepLinkedGame);
-  const [players, setPlayers] = usePersistentState("vors.players", []);
+  const [players, setPlayers] = useState([]);
   const [antall, setAntall] = usePersistentState("vors.face.count", 16);
   const [penalty, setPenalty] = usePersistentState("vors.face.penalty", 2);
   const [runde, setRunde] = useState(0);
@@ -64,6 +64,7 @@ export default function App() {
   const selectGame = (gameId) => {
     setSelectedGameId(gameId);
     if (gameId === "questions") setQuestionMode("standard");
+    if (getStartScreen(gameId) === "setup") setPlayers([]);
     setScreen(getStartScreen(gameId));
     trackEvent("game_selected", { gameId });
   };

@@ -1,5 +1,6 @@
 import ArrowLeft from "lucide-react/dist/esm/icons/arrow-left.js";
 import Beer from "lucide-react/dist/esm/icons/beer.js";
+import BusFront from "lucide-react/dist/esm/icons/bus-front.js";
 import CarFront from "lucide-react/dist/esm/icons/car-front.js";
 import CircleHelp from "lucide-react/dist/esm/icons/circle-help.js";
 import Citrus from "lucide-react/dist/esm/icons/citrus.js";
@@ -43,13 +44,26 @@ const PIECE_ICONS = {
 
 const PROPERTY_SPACES = BOARD_SPACES.filter((space) => space.type === "property");
 const PARTY_CARDS = [...CHALLENGE_CARDS, ...BONUS_CARDS];
+const JAIL_INDEX = BOARD_SPACES.findIndex((space) => space.type === "jail");
+const CORNER_INDEXES = new Set([0, 5, 10, 15]);
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const getBoardPosition = (index) => {
-  if (index <= 5) return { gridRow: 1, gridColumn: index + 1 };
-  if (index <= 10) return { gridRow: index - 4, gridColumn: 6 };
-  if (index <= 15) return { gridRow: 6, gridColumn: 16 - index };
-  return { gridRow: 21 - index, gridColumn: 1 };
+  if (index === 0) return { gridRow: "7 / 9", gridColumn: "7 / 9" };
+  if (index <= 4) return { gridRow: 7 - index, gridColumn: "7 / 9" };
+  if (index === 5) return { gridRow: "1 / 3", gridColumn: "7 / 9" };
+  if (index <= 9) return { gridRow: "1 / 3", gridColumn: 12 - index };
+  if (index === 10) return { gridRow: "1 / 3", gridColumn: "1 / 3" };
+  if (index <= 14) return { gridRow: index - 8, gridColumn: "1 / 3" };
+  if (index === 15) return { gridRow: "7 / 9", gridColumn: "1 / 3" };
+  return { gridRow: "7 / 9", gridColumn: index - 13 };
+};
+
+const getColorBarClass = (index) => {
+  if (index >= 1 && index <= 4) return "inset-y-0 left-0 w-1.5";
+  if (index >= 6 && index <= 9) return "inset-x-0 bottom-0 h-1.5";
+  if (index >= 11 && index <= 14) return "inset-y-0 right-0 w-1.5";
+  return "inset-x-0 top-0 h-1.5";
 };
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
@@ -78,16 +92,18 @@ function DiceFace({ value, rolling }) {
   );
 }
 
-function SpaceIcon({ type }) {
+function SpaceIcon({ type, size = 14 }) {
   const icons = {
     start: Flag,
     bonus: Gift,
     jail: LockKeyhole,
-    pause: GlassWater,
-    taxi: CarFront,
+    goJail: LockKeyhole,
+    parking: CarFront,
+    pause: BusFront,
+    tax: Ticket,
   };
   const Icon = icons[type] || CircleHelp;
-  return <Icon size={14} strokeWidth={2.2} aria-hidden="true" />;
+  return <Icon size={size} strokeWidth={2.2} aria-hidden="true" />;
 }
 
 function GameSheet({ eyebrow, title, text, children }) {
@@ -121,6 +137,8 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
   const [dice, setDice] = useState(null);
   const [rolling, setRolling] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [extraRoll, setExtraRoll] = useState(false);
+  const [rollAgainPrompt, setRollAgainPrompt] = useState(false);
   const [modal, setModal] = useState({ type: "welcome" });
   const [winner, setWinner] = useState(null);
   const [tvMode, setTvMode] = useState(false);
@@ -147,7 +165,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     url.searchParams.set("game", "vorsbyen");
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Vorsbyen", text: "Åpne Vorsbyen på skjermen", url: url.toString() });
+        await navigator.share({ title: "Vorsopol", text: "Åpne Vorsopol på skjermen", url: url.toString() });
       } else {
         await navigator.clipboard?.writeText(url.toString());
         setModal({ type: "screen", copied: true });
@@ -179,6 +197,15 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       return;
     }
 
+    if (extraRoll && nextPlayers[currentIndex].active && !nextPlayers[currentIndex].inJail) {
+      setExtraRoll(false);
+      setRollAgainPrompt(true);
+      setDice(null);
+      setMoving(false);
+      setModal(null);
+      return;
+    }
+
     let nextIndex = currentIndex;
     for (let offset = 1; offset <= nextPlayers.length; offset += 1) {
       const candidate = (currentIndex + offset) % nextPlayers.length;
@@ -189,6 +216,8 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     }
     if (nextIndex <= currentIndex) setRound((value) => value + 1);
     setCurrentIndex(nextIndex);
+    setExtraRoll(false);
+    setRollAgainPrompt(false);
     setDice(null);
     setMoving(false);
     setModal(null);
@@ -196,7 +225,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
   const sendToJail = () => {
     const nextPlayers = gamePlayers.map((player, index) =>
-      index === currentIndex ? { ...player, position: 8, inJail: true } : player,
+      index === currentIndex ? { ...player, position: JAIL_INDEX, inJail: true } : player,
     );
     setGamePlayers(nextPlayers);
     setModal({ type: "jailed", nextPlayers });
@@ -218,7 +247,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
     if (round === 1) {
       const nextPlayers = gamePlayers.map((player, index) =>
-        index === currentIndex ? { ...player, position: 8, inJail: true } : player,
+        index === currentIndex ? { ...player, position: JAIL_INDEX, inJail: true } : player,
       );
       setGamePlayers(nextPlayers);
       setModal({ type: "first-round-shield", nextPlayers });
@@ -315,16 +344,18 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       );
       setGamePlayers(jailedPlayers);
       setModal({ type: "jailed", nextPlayers: jailedPlayers });
-    } else if (space.type === "taxi") {
-      const taxiPlayers = nextPlayers.map((player, index) =>
-        index === currentIndex
-          ? { ...player, position: 0, currency: Math.min(MAX_CURRENCY, player.currency + 1) }
-          : player,
+    } else if (space.type === "goJail") {
+      const jailedPlayers = nextPlayers.map((player, index) =>
+        index === currentIndex ? { ...player, position: JAIL_INDEX, inJail: true } : player,
       );
-      setGamePlayers(taxiPlayers);
-      setModal({ type: "message", title: "Taxi til Start", text: "Du får 1 slurkmynt.", nextPlayers: taxiPlayers });
+      setGamePlayers(jailedPlayers);
+      setModal({ type: "jailed", nextPlayers: jailedPlayers });
+    } else if (space.type === "parking") {
+      setModal({ type: "message", title: "Gratis parkering", text: "Ingen kostnad og ingen straff. Turen går videre.", nextPlayers });
+    } else if (space.type === "tax") {
+      setModal({ type: "tax", space });
     } else if (space.type === "pause") {
-      setModal({ type: "message", title: "Vannpause", text: "Ingen straff. Ta en liten pause før neste spiller.", nextPlayers });
+      setModal({ type: "message", title: space.name, text: "Ingen kostnad og ingen straff. Turen går videre.", nextPlayers });
     } else {
       setModal({ type: "message", title: "Start", text: "Du får 1 slurkmynt, opptil maks 5.", nextPlayers });
     }
@@ -337,8 +368,12 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       return;
     }
 
-    const result = Math.floor(Math.random() * 6) + 1;
-    setDice(result);
+    const firstDie = Math.floor(Math.random() * 6) + 1;
+    const secondDie = Math.floor(Math.random() * 6) + 1;
+    const result = firstDie + secondDie;
+    setDice([firstDie, secondDie]);
+    setExtraRoll(firstDie === secondDie);
+    setRollAgainPrompt(false);
     setMoving(true);
     setRolling(true);
     await wait(560);
@@ -358,7 +393,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
           : player,
       );
       setGamePlayers(nextPlayers);
-      await wait(145);
+      await wait(120);
     }
 
     resolveSpace(BOARD_SPACES[position], nextPlayers);
@@ -383,7 +418,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
     if (modal.type === "rules") {
       return (
-        <GameSheet eyebrow="Vorsbyen" title="Regelbok">
+        <GameSheet eyebrow="Vorsopol" title="Regelbok">
           <div className="space-y-5 text-left text-sm font-medium leading-relaxed text-gray-600">
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">1. Målet</h3>
@@ -395,7 +430,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">3. En tur</h3>
-              <p className="mt-1">Trill terningen, følg brikken felt for felt og gjør det feltet sier. Du kan gjøre maks {PURCHASES_PER_TURN} kjøp eller oppgradering per tur.</p>
+              <p className="mt-1">Trill to terninger, følg brikken felt for felt og gjør det feltet sier. To like terninger gir en ny tur. Du kan gjøre maks {PURCHASES_PER_TURN} kjøp eller oppgradering per tur.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">4. Utesteder og hus</h3>
@@ -407,10 +442,14 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">6. Bonusfelt</h3>
-              <p className="mt-1">Alle utfordringer trekkes kun på Bonusfelt. Fullfør kortet, eller stå over og gå til Fyllarresten.</p>
+              <p className="mt-1">Brettet har to Bonusfelt. Alle utfordringer trekkes kun der. Fullfør kortet, eller stå over og gå til Fyllarresten.</p>
             </section>
             <section>
-              <h3 className="font-display text-base font-bold text-gray-900">7. Fyllarresten og straff</h3>
+              <h3 className="font-display text-base font-bold text-gray-900">7. Hjørnefeltene</h3>
+              <p className="mt-1">Start gir poeng. Gratis parkering er en trygg pause. Gå til Fyllarresten flytter brikken direkte til fengselshjørnet.</p>
+            </section>
+            <section>
+              <h3 className="font-display text-base font-bold text-gray-900">8. Fyllarresten og straff</h3>
               <p className="mt-1">Ta en avtalt shot for å gå ut, eller stå over en tur. Står du over en drikkestraff, mister du ett utested. Ingen ryker i første runde.</p>
             </section>
             <section>
@@ -469,6 +508,15 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       );
     }
 
+    if (modal.type === "tax") {
+      return (
+        <GameSheet eyebrow="Fast felt" title={modal.space.name} text={`Ta ${modal.space.penalty} slurk${modal.space.penalty === 1 ? "" : "er"}, eller stå over og mist ett utested.`}>
+          <Button onClick={() => advanceTurn()}>Utført</Button>
+          <Button variant="secondary" onClick={declineDrinkPenalty}>Stå over</Button>
+        </GameSheet>
+      );
+    }
+
     if (modal.type === "card") {
       return (
         <GameSheet eyebrow={modal.kind} title={modal.card.title} text={modal.card.text}>
@@ -516,7 +564,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
     if (modal.type === "winner") {
       return (
-        <GameSheet eyebrow="To komplette nabolag" title={`${modal.player.name} vinner!`} text={`${modal.player.piece.name}-brikken har tatt over Vorsbyen.`}>
+        <GameSheet eyebrow="To komplette nabolag" title={`${modal.player.name} vinner!`} text={`${modal.player.piece.name}-brikken har tatt over Vorsopol.`}>
           <Button onClick={onBack}>Tilbake til meny</Button>
         </GameSheet>
       );
@@ -538,13 +586,13 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
   };
 
   return (
-    <main className={`relative flex min-h-full flex-col overflow-hidden bg-white px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-gray-900 ${tvMode ? "fixed inset-0 z-[70] h-screen w-screen" : ""}`}>
+    <main className={`relative flex h-full min-h-0 flex-col bg-white px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-gray-900 ${tvMode ? "fixed inset-0 z-[70] h-screen w-screen overflow-hidden" : "overflow-y-auto overscroll-contain"}`} style={{ WebkitOverflowScrolling: "touch" }}>
       <header className="flex h-11 shrink-0 items-center justify-between">
         <button onClick={onBack} className="flex h-10 items-center gap-1 rounded-full bg-gray-100 px-3 text-sm font-medium text-gray-500" aria-label="Tilbake til spillmenyen">
           <ArrowLeft size={16} aria-hidden="true" /> Meny
         </button>
         <div className="text-center">
-          <h1 className="font-display text-lg font-bold">Vorsbyen</h1>
+          <h1 className="font-display text-lg font-bold">Vorsopol</h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">Runde {round}</p>
         </div>
         <button onClick={() => setModal({ type: "rules" })} className="icon-button h-10 w-10 bg-gray-100 text-gray-500" aria-label="Vis spilleregler">
@@ -566,17 +614,18 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
         ))}
       </section>
 
-      <section className={`relative mx-auto mt-1 grid aspect-square w-full shrink-0 grid-cols-6 grid-rows-6 overflow-hidden rounded-xl border-2 border-gray-900 bg-gray-50 ${tvMode ? "max-w-[min(72vh,760px)]" : "max-w-[390px]"}`} aria-label="Spillebrett">
+      <section className={`relative mx-auto mt-1 grid aspect-square w-full shrink-0 grid-cols-8 grid-rows-8 overflow-hidden rounded-xl border-2 border-gray-900 bg-gray-50 ${tvMode ? "max-w-[min(72vh,760px)]" : "max-w-[390px]"}`} aria-label="Spillebrett">
         {BOARD_SPACES.map((space, index) => {
           const property = space.type === "property" ? ownership[space.id] : null;
           const neighborhood = space.group ? NEIGHBORHOODS[space.group] : null;
           const owner = property ? gamePlayers[property.owner] : null;
+          const isCorner = CORNER_INDEXES.has(index);
           const piecesHere = gamePlayers.map((player, playerIndex) => ({ player, playerIndex })).filter(({ player }) => player.active && player.position === index);
           return (
-            <button key={space.id} onClick={() => space.type === "property" && openPropertyInfo(space)} disabled={space.type !== "property"} style={{ ...getBoardPosition(index), backgroundColor: owner ? `${owner.piece.color}12` : "#fff", boxShadow: owner ? `inset 0 0 0 2px ${owner.piece.color}` : undefined }} className="relative min-h-0 min-w-0 overflow-hidden border border-gray-200 px-0.5 pb-3 pt-1.5 text-center disabled:opacity-100" aria-label={space.type === "property" ? `Info om ${space.name}` : space.name}>
-              {neighborhood && <span className="absolute inset-x-0 top-0 h-1.5" style={{ background: neighborhood.color }} />}
-              {space.type !== "property" && <span className="mx-auto mb-0.5 grid h-5 w-5 place-items-center text-gray-700"><SpaceIcon type={space.type} /></span>}
-              <span className={`block break-words font-display font-bold leading-[1.05] text-gray-800 ${space.type === "property" ? "text-[8px]" : "text-[7px]"}`}>{space.shortName || space.name}</span>
+            <button key={space.id} onClick={() => space.type === "property" && openPropertyInfo(space)} disabled={space.type !== "property"} style={{ ...getBoardPosition(index), backgroundColor: owner ? `${owner.piece.color}12` : "#fff", boxShadow: owner ? `inset 0 0 0 2px ${owner.piece.color}` : undefined }} className={`relative min-h-0 min-w-0 overflow-hidden border border-gray-200 px-1 pb-3 text-center disabled:opacity-100 ${isCorner ? "pt-3" : "pt-1.5"}`} aria-label={space.type === "property" ? `Info om ${space.name}` : space.name}>
+              {neighborhood && <span className={`absolute ${getColorBarClass(index)}`} style={{ background: neighborhood.color }} />}
+              {space.type !== "property" && <span className={`mx-auto mb-1 grid place-items-center text-gray-700 ${isCorner ? "h-8 w-8" : "h-5 w-5"}`}><SpaceIcon type={space.type} size={isCorner ? 22 : 14} /></span>}
+              <span className={`block break-words font-display font-bold leading-[1.05] text-gray-800 ${isCorner ? "text-[9px]" : space.type === "property" ? "text-[8px]" : "text-[7px]"}`}>{space.shortName || space.name}</span>
               {space.type === "property" && !property && <span className="mt-0.5 block text-[7px] font-black text-gray-400">{space.cost} poeng</span>}
               {owner && <span className="absolute bottom-0.5 left-0.5 max-w-[70%] overflow-hidden whitespace-nowrap rounded px-1 py-0.5 text-[5px] font-black text-white" style={{ background: owner.piece.color }}>{owner.name}</span>}
               {owner && (
@@ -595,17 +644,23 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
           );
         })}
 
-        <div className="col-[2/6] row-[2/6] flex min-h-0 flex-col items-center justify-center border border-gray-200 bg-white p-3 text-center">
-          {dice ? <DiceFace value={dice} rolling={rolling} /> : (
+        <div className="col-[3/7] row-[3/7] flex min-h-0 flex-col items-center justify-center border border-gray-200 bg-white p-3 text-center">
+          {dice ? (
+            <span className="flex gap-2">
+              <DiceFace value={dice[0]} rolling={rolling} />
+              <DiceFace value={dice[1]} rolling={rolling} />
+            </span>
+          ) : (
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-gray-100" style={{ color: currentPlayer.piece.color }}>
               <PieceIcon piece={currentPlayer.piece} size={21} />
             </span>
           )}
           <p className="mt-2 max-w-full truncate font-display text-sm font-bold">{currentPlayer.name}</p>
           <p className="text-[10px] font-semibold text-gray-400">{currentPlayer.piece.name} · {currentPlayer.currency} slurkmynter</p>
+          {rollAgainPrompt && <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-600">Dobbelt! Trill igjen</p>}
           {currentPlayer.inJail && <span className="mt-1 flex items-center gap-1 text-[10px] font-bold text-red-500"><Shield size={11} /> Fyllarresten</span>}
           <button onClick={rollDice} disabled={moving || !currentPlayer.active || Boolean(winner)} className="mt-3 flex min-h-10 w-full max-w-36 items-center justify-center gap-2 rounded-xl bg-gray-900 px-3 font-display text-sm font-bold text-white transition active:scale-95 disabled:opacity-40">
-            <Dice5 size={17} aria-hidden="true" /> {rolling ? "Triller..." : moving ? `Flytter ${dice} felt` : currentPlayer.inJail ? "Kom deg ut" : "Trill terningen"}
+            <Dice5 size={17} aria-hidden="true" /> {rolling ? "Triller..." : moving ? `Flytter ${dice[0] + dice[1]} felt` : currentPlayer.inJail ? "Kom deg ut" : rollAgainPrompt ? "Trill på nytt" : "Trill terningene"}
           </button>
         </div>
       </section>
@@ -613,7 +668,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       <footer className="mt-3 flex min-h-0 flex-1 items-center justify-between gap-2 text-[11px] font-semibold text-gray-400">
         <span className="flex items-center gap-1"><Ticket size={14} /> {currentPlayer.currency}/{MAX_CURRENCY} poeng</span>
         <span className="flex items-center gap-1"><House size={14} /> {PURCHASES_PER_TURN} kjøp/tur</span>
-        <button onClick={() => setModal({ type: "screen" })} className="flex min-h-10 items-center gap-1.5 rounded-xl bg-gray-900 px-3 font-display text-xs font-bold text-white" aria-label="Del Vorsbyen til skjerm">
+        <button onClick={() => setModal({ type: "screen" })} className="flex min-h-10 items-center gap-1.5 rounded-xl bg-gray-900 px-3 font-display text-xs font-bold text-white" aria-label="Del Vorsopol til skjerm">
           {tvMode ? <Maximize2 size={15} /> : <MonitorUp size={15} />} Del til skjerm
         </button>
       </footer>
