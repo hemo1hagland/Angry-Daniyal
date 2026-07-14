@@ -3,8 +3,10 @@
 
 import face1Happy from "../assets/faces/face1_happy_mobile.png";
 import face2Angry from "../assets/faces/face2_angry_mobile.png";
+import bonusLady from "../assets/faces/bonus-lady.png";
 
 export const FACE = {
   happy: face1Happy,
   angry: face2Angry,
+  bonus: bonusLady,
 };

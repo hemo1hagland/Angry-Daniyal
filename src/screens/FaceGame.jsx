@@ -1,11 +1,14 @@
 import { useState } from "react";
 import Face from "../components/Face";
+import { FACE } from "../data/faces";
 
 const COLS = { 9: 3, 16: 4, 25: 5, 36: 6 };
 
-export default function FaceGame({ antall, onLose, onBack, runde, players = [] }) {
+export default function FaceGame({ antall, onLose, onBack, runde }) {
   const [angryIndex] = useState(() => Math.floor(Math.random() * antall));
+  const [bonusIndex] = useState(() => (angryIndex + 1 + Math.floor(Math.random() * (antall - 1))) % antall);
   const [faceStates, setFaceStates] = useState(() => Array(antall).fill("idle"));
+  const [showBonus, setShowBonus] = useState(false);
 
   const håndterTrykk = (i) => {
     if (faceStates[i] !== "idle") return;
@@ -18,6 +21,22 @@ export default function FaceGame({ antall, onLose, onBack, runde, players = [] }
       });
       if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
       setTimeout(() => onLose(), 900);
+    } else if (i === bonusIndex) {
+      setFaceStates((prev) => {
+        const next = [...prev];
+        next[i] = "bonus";
+        return next;
+      });
+      if (navigator.vibrate) navigator.vibrate(35);
+      setShowBonus(true);
+      setTimeout(() => {
+        setShowBonus(false);
+        setFaceStates((prev) => {
+          const next = [...prev];
+          next[i] = "removed";
+          return next;
+        });
+      }, 1400);
     } else {
       if (navigator.vibrate) navigator.vibrate(15);
       setFaceStates((prev) => {
@@ -29,9 +48,8 @@ export default function FaceGame({ antall, onLose, onBack, runde, players = [] }
   };
 
   const cols = COLS[antall] || 4;
-
   return (
-    <div className="flex min-h-[100dvh] flex-col px-5 py-8">
+    <div className="relative flex min-h-[100dvh] flex-col overflow-hidden px-5 py-8">
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={onBack}
@@ -49,7 +67,7 @@ export default function FaceGame({ antall, onLose, onBack, runde, players = [] }
           Trykk på et ansikt
         </h2>
         <p className="mt-1 font-body text-gray-400">
-          {players.length ? `${players[(runde - 1) % players.length]} starter. Send videre etter hvert trykk.` : "Én av dem er sur. Tør du?"}
+          Én av dem er sur. Send mobilen videre etter hvert trykk.
         </p>
       </div>
 
@@ -65,6 +83,17 @@ export default function FaceGame({ antall, onLose, onBack, runde, players = [] }
           />
         ))}
       </div>
+      {showBonus && (
+        <div className="pointer-events-none absolute inset-x-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-40 flex items-center gap-3 rounded-2xl bg-gray-900 p-3 text-left text-white shadow-xl" role="status" aria-live="polite">
+          <div className="h-12 w-10 shrink-0 overflow-hidden rounded-lg bg-white">
+            <img src={FACE.bonus} alt="" className="h-full w-full object-cover object-top" />
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Bonus</p>
+            <p className="font-display text-lg font-bold">Del ut 2 slurker</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

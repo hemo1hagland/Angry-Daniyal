@@ -66,6 +66,17 @@ select:focus-visible {
   padding-top: env(safe-area-inset-top);
 }
 
+body.vorsopol-tv-active .phone-shell {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+}
+
 .icon-button {
   display: grid;
   width: 44px;
@@ -80,6 +91,29 @@ select:focus-visible {
 
 .icon-button:active {
   transform: scale(0.94);
+}
+
+.country-flag {
+  display: block;
+  width: 52px;
+  height: 36px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid rgb(0 0 0 / 0.1);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+.country-flag-large {
+  width: 72px;
+  height: 48px;
+}
+
+.country-flag svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .stat-tile {
@@ -246,6 +280,75 @@ select:focus-visible {
   animation: confetti 1.9s ease-in forwards;
 }
 
+@keyframes diceRoll {
+  0% { transform: rotate(0deg) scale(0.78); }
+  35% { transform: rotate(165deg) scale(1.16); }
+  70% { transform: rotate(310deg) scale(0.92); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes pieceHop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.12); }
+}
+
+.dice-rolling {
+  animation: diceRoll 560ms cubic-bezier(0.22, 0.8, 0.32, 1) both;
+}
+
+.piece-hopping {
+  animation: pieceHop 120ms ease-out both;
+}
+
+.beer-glass {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid #cbd5e1;
+  border-top-width: 3px;
+  border-radius: 3px 3px 9px 9px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 75%);
+}
+
+.beer-liquid {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  min-height: 0;
+  border-radius: 1px 1px 6px 6px;
+  background: #e2a21b;
+  transition: height 420ms cubic-bezier(0.22, 0.8, 0.32, 1);
+}
+
+.beer-foam {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 5px;
+  border-bottom: 1px solid #f3e3ad;
+  background: #fff8df;
+}
+
+.beer-measurements {
+  position: absolute;
+  inset: 3px;
+  background: repeating-linear-gradient(to top, transparent 0, transparent calc(10% - 1px), rgb(255 255 255 / 62%) calc(10% - 1px), rgb(255 255 255 / 62%) 10%);
+  pointer-events: none;
+}
+
+@keyframes beerFill {
+  from { height: 0; }
+  to { height: var(--beer-level); }
+}
+
+.beer-fill-intro {
+  animation: beerFill 1.15s cubic-bezier(0.22, 0.8, 0.32, 1) both;
+}
+
 @media (min-width: 520px) {
   body {
     padding: 12px 0;
@@ -256,6 +359,17 @@ select:focus-visible {
     min-height: calc(100dvh - 24px);
     border-radius: 28px;
   }
+}
+
+body.vorsopol-screen-active {
+  padding: 0;
+  background: #fff;
+}
+
+body.vorsopol-screen-active .phone-shell {
+  height: 100dvh;
+  min-height: 100dvh;
+  border-radius: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

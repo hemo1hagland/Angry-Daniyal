@@ -19,8 +19,15 @@ const SpinWheel = lazy(() => import("./screens/SpinWheel"));
 const BusRoute = lazy(() => import("./screens/BusRoute"));
 const QuestionGame = lazy(() => import("./screens/QuestionGame"));
 const CustomCards = lazy(() => import("./screens/CustomCards"));
+const WorldGames = lazy(() => import("./screens/WorldGames"));
+const Vorsbyen = lazy(() => import("./screens/Vorsbyen"));
 
-const DIRECT_START_GAMES = new Set(["questions", "pubgolf"]);
+const DIRECT_START_GAMES = new Set(["questions", "pubgolf", "world"]);
+
+const getStartScreen = (gameId) => {
+  if (gameId === "face") return "face-settings";
+  return DIRECT_START_GAMES.has(gameId) ? gameId : "setup";
+};
 
 const getDeepLinkedGame = () => {
   const id = new URLSearchParams(window.location.search).get("game");
@@ -34,9 +41,9 @@ function LoadingScreen() {
 export default function App() {
   const deepLinkedGame = getDeepLinkedGame();
   const [eventPack] = useState(getActiveEventPack);
-  const [screen, setScreen] = useState(deepLinkedGame ? (DIRECT_START_GAMES.has(deepLinkedGame) ? deepLinkedGame : "setup") : "home");
+  const [screen, setScreen] = useState(deepLinkedGame ? getStartScreen(deepLinkedGame) : "home");
   const [selectedGameId, setSelectedGameId] = useState(deepLinkedGame);
-  const [players, setPlayers] = usePersistentState("vors.players", []);
+  const [players, setPlayers] = useState([]);
   const [antall, setAntall] = usePersistentState("vors.face.count", 16);
   const [penalty, setPenalty] = usePersistentState("vors.face.penalty", 2);
   const [runde, setRunde] = useState(0);
@@ -54,10 +61,16 @@ export default function App() {
     trackEvent("app_opened", { eventId: eventPack.id, source: deepLinkedGame ? "shared_game" : "direct" });
   }, [deepLinkedGame, eventPack]);
 
+  useEffect(() => {
+    document.body.classList.toggle("vorsopol-screen-active", screen === "vorsbyen");
+    return () => document.body.classList.remove("vorsopol-screen-active");
+  }, [screen]);
+
   const selectGame = (gameId) => {
     setSelectedGameId(gameId);
     if (gameId === "questions") setQuestionMode("standard");
-    setScreen(DIRECT_START_GAMES.has(gameId) ? gameId : "setup");
+    if (getStartScreen(gameId) === "setup") setPlayers([]);
+    setScreen(getStartScreen(gameId));
     trackEvent("game_selected", { gameId });
   };
 
@@ -75,7 +88,7 @@ export default function App() {
   };
 
   const launchGame = () => {
-    setScreen(selectedGameId === "face" ? "face-settings" : selectedGameId);
+    setScreen(selectedGameId);
     trackEvent("game_started", { gameId: selectedGameId, playerCount: players.length });
   };
 
@@ -105,13 +118,13 @@ export default function App() {
   const gameProps = { players, onBack: () => setScreen("games"), onComplete: completeGame };
 
   return (
-    <div className="phone-shell relative mx-auto w-full max-w-md overflow-hidden bg-white font-body shadow-2xl shadow-black/10">
+    <div className={`phone-shell relative mx-auto w-full overflow-hidden bg-white font-body ${screen === "vorsbyen" ? "fixed inset-0 z-40 h-screen min-h-screen max-w-none shadow-none" : "max-w-md shadow-2xl shadow-black/10"}`}>
       <Suspense fallback={<LoadingScreen />}>
         {screen === "home" && <Home onStart={() => setScreen("games")} onShare={() => setShareOpen(true)} eventPack={eventPack} />}
         {screen === "games" && <GameMenu onSelect={selectGame} onBack={goHome} onShare={() => setShareOpen(true)} eventPack={eventPack} onPremiumPreview={setPremiumPack} />}
         {screen === "setup" && selectedGame && <PlayerSetup game={selectedGame} players={players} onPlayersChange={setPlayers} onStart={launchGame} onBack={() => setScreen("games")} />}
-        {screen === "face-settings" && <Landing initialCount={antall} initialPenalty={penalty} onStart={startFaceGame} onBack={() => setScreen("setup")} />}
-        {screen === "face-game" && <FaceGame antall={antall} runde={runde} players={players} onLose={() => { completeGame("face"); setScreen("face-result"); }} onBack={() => setScreen("face-settings")} />}
+        {screen === "face-settings" && <Landing initialCount={antall} initialPenalty={penalty} onStart={startFaceGame} onBack={() => setScreen("games")} />}
+        {screen === "face-game" && <FaceGame antall={antall} runde={runde} onLose={() => { completeGame("face"); setScreen("face-result"); }} onBack={() => setScreen("face-settings")} />}
         {screen === "face-result" && <ResultView penalty={penalty} onNext={playFaceAgain} onMenu={() => setScreen("games")} />}
         {screen === "horse" && <HorseRace {...gameProps} />}
         {screen === "pubgolf" && <PubGolf {...gameProps} />}
@@ -119,6 +132,8 @@ export default function App() {
         {screen === "busroute" && <BusRoute {...gameProps} />}
         {screen === "questions" && <QuestionGame key={questionMode} {...gameProps} initialMode={questionMode} />}
         {screen === "custom-cards" && <CustomCards {...gameProps} />}
+        {screen === "world" && <WorldGames {...gameProps} />}
+        {screen === "vorsbyen" && <Vorsbyen {...gameProps} />}
       </Suspense>
 
       <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} gameId={selectedGameId} eventPack={eventPack} />

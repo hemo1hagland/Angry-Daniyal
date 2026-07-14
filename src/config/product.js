@@ -1,7 +1,4 @@
-/**
- * Product switches live here so payments and premium access can be added
- * without coupling purchase logic to the game screens.
- */
+/** Product switches are kept away from the game screens. */
 export const PREMIUM_ENABLED = false;
 
 export const PRODUCT = {
@@ -10,7 +7,7 @@ export const PRODUCT = {
   publicUrl: "https://angry-daniyal.vercel.app/",
   tagline: "Partyspill for hele gjengen",
   responsibleUse:
-    "Spill ansvarlig. Alkohol er valgfritt. Aldri press noen til å delta.",
+    "Spill ansvarlig. Aldri press noen til å delta.",
   oneTimePriceNok: 49,
   packPriceRangeNok: [19, 29],
 };
@@ -25,6 +22,7 @@ export const PRODUCT = {
  * @property {string} accent
  * @property {boolean} premium
  * @property {number} minPlayers
+ * @property {number} [maxPlayers]
  * @property {string[]} highlights
  */
 
@@ -32,7 +30,7 @@ export const PRODUCT = {
 export const GAMES = [
   {
     id: "face",
-    name: "Ansiktsspillet",
+    name: "Angry-Daniyal",
     description: "Send mobilen rundt. Ett ansikt avslører taperen.",
     category: "quick",
     icon: "faces",
@@ -88,13 +86,36 @@ export const GAMES = [
   {
     id: "pubgolf",
     name: "Torbjørn sin pubgolf",
-    description: "Ni faste hull i rekkefølgen Torbjørn har bestemt.",
+    description: "Bygg en bane med 3, 6 eller 9 hull og velg utfordringene selv.",
     category: "teams",
     icon: "golf",
     accent: "#168b68",
     premium: false,
     minPlayers: 2,
-    highlights: ["Lagspill", "9 faste hull", "Torbjørns bane"],
+    highlights: ["3-9 hull", "20 utfordringer", "Bygg egen bane"],
+  },
+  {
+    id: "world",
+    name: "Haglands drikkelek",
+    description: "Velg land og prøv kjente drikkeleker fra andre deler av verden.",
+    category: "choice",
+    icon: "globe",
+    accent: "#151515",
+    premium: false,
+    minPlayers: 2,
+    highlights: ["8 land", "17 spill", "Automatiske straffer"],
+  },
+  {
+    id: "vorsbyen",
+    name: "Vorsopol",
+    description: "Kjøp norske utesteder, bygg hus og vinn to komplette nabolag.",
+    category: "choice",
+    icon: "city",
+    accent: "#151515",
+    premium: false,
+    minPlayers: 2,
+    maxPlayers: 4,
+    highlights: ["2-4 spillere", "40 felt", "500 ml øl-cash"],
   },
 ];
 
@@ -103,14 +124,14 @@ export const PREMIUM_PACKS = [
     id: "after-dark",
     name: "Etter midnatt",
     description: "25 drøyere spørsmål om dating, hemmeligheter og pinlige valg.",
-    priceNok: 29,
+    priceNok: 0,
     preview: ["Direkte dating-spørsmål", "Pinlige meldinger", "Hemmeligheter i gruppen"],
   },
   {
     id: "event-maker",
     name: "Lag egne kort",
     description: "Bygg og lagre deres egne utfordringer til neste kveld.",
-    priceNok: 49,
+    priceNok: 0,
     preview: ["Egne spørsmål", "Egne regler", "Delbar eventpakke"],
   },
 ];

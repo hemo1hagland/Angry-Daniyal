@@ -26,10 +26,7 @@ export default function ResultView({ penalty, onNext, onMenu }) {
         Du traff det sinte ansiktet.
       </p>
 
-      <div
-        className="mb-12 animate-countUp"
-        style={{ animationDelay: "0.25s" }}
-      >
+      <div className="mb-12 animate-countUp" style={{ animationDelay: "0.25s" }}>
         <div className="rounded-[20px] bg-gray-50 px-10 py-6 shadow-sm ring-1 ring-gray-200/60">
           <p className="mb-1 font-body text-sm uppercase tracking-[0.2em] text-gray-400">
             Straff
@@ -38,7 +35,7 @@ export default function ResultView({ penalty, onNext, onMenu }) {
             {penalty}
           </p>
           <p className="mt-1 font-body text-lg text-gray-500">
-            {penalty === 1 ? "valgfri utfordring" : "valgfrie utfordringer"}
+            {penalty === 1 ? "slurk" : "slurker"}
           </p>
         </div>
       </div>
