@@ -23,7 +23,7 @@ const getDeepLinkedGame = () => {
 };
 
 function LoadingScreen() {
-  return <div className="grid min-h-full place-items-center bg-[#f5f3ef]" role="status"><span className="loader" /><span className="sr-only">Laster spill</span></div>;
+  return <div className="grid min-h-full place-items-center bg-white" role="status"><span className="loader" /><span className="sr-only">Laster spill</span></div>;
 }
 
 export default function App() {

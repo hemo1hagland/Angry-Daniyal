@@ -1,63 +1,44 @@
 import ArrowLeft from "lucide-react/dist/esm/icons/arrow-left.js";
-import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.js";
-import Crown from "lucide-react/dist/esm/icons/crown.js";
-import Dices from "lucide-react/dist/esm/icons/dices.js";
-import LockKeyhole from "lucide-react/dist/esm/icons/lock-keyhole.js";
 import Share2 from "lucide-react/dist/esm/icons/share-2.js";
+import Button from "../components/Button";
 import { GAMES, PREMIUM_PACKS } from "../config/product";
-
-const ICON_LABELS = { faces: "🙂", wheel: "◎", cards: "♠", horse: "♞", golf: "⚑" };
 
 export default function GameMenu({ onSelect, onBack, onShare, eventPack, onPremiumPreview }) {
   const availableGames = GAMES.filter((game) => eventPack.games.includes(game.id));
 
   return (
-    <main className="min-h-full overflow-y-auto bg-[#f5f3ef] px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 text-slate-950">
-      <div className="mx-auto w-full max-w-md">
-        <header className="flex items-center justify-between">
-          <button className="icon-button bg-white" onClick={onBack} aria-label="Tilbake til forsiden"><ArrowLeft size={20} aria-hidden="true" /></button>
-          <span className="text-xs font-bold uppercase text-slate-500">1 av 2</span>
-          <button className="icon-button bg-white" onClick={onShare} aria-label="Del spill"><Share2 size={19} aria-hidden="true" /></button>
-        </header>
+    <main className="relative flex min-h-full flex-col items-center overflow-y-auto bg-white px-6 pb-12 pt-24 text-center">
+      <button className="absolute left-5 top-5 flex h-11 items-center gap-1 rounded-full bg-gray-100 px-4 font-body text-sm text-gray-500 transition active:scale-95" onClick={onBack} aria-label="Tilbake til forsiden">
+        <ArrowLeft size={17} aria-hidden="true" /> Meny
+      </button>
+      <button className="icon-button absolute right-5 top-5 bg-gray-100 text-gray-500" onClick={onShare} aria-label="Del spill">
+        <Share2 size={18} aria-hidden="true" />
+      </button>
 
-        <div className="mt-7">
-          <p className="flex items-center gap-1.5 text-sm font-bold text-[#ef5b45]"><Dices size={17} aria-hidden="true" /> Spillbibliotek</p>
-          <h1 className="mt-1 font-display text-4xl font-bold leading-tight">Hva skal vi spille?</h1>
-          <p className="mt-2 text-sm font-medium text-slate-500">Alle spill fungerer med eller uten alkohol.</p>
-        </div>
+      <h1 className="mb-4 font-display text-7xl font-bold tracking-tighter text-gray-900">Vors</h1>
+      <p className="mb-12 max-w-xs font-body text-lg text-gray-400">Velg spill og send mobilen rundt bordet.</p>
 
-        <section className="mt-6 space-y-3" aria-label="Tilgjengelige spill">
-          {availableGames.map((game) => (
-            <button key={game.id} onClick={() => onSelect(game.id)} className="game-row group w-full text-left">
-              <span className="game-icon" style={{ backgroundColor: game.accent }} aria-hidden="true">{ICON_LABELS[game.icon]}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-display text-lg font-bold text-slate-950">{game.name}</span>
-                <span className="mt-0.5 block text-xs font-medium leading-snug text-slate-500">{game.description}</span>
-              </span>
-              <ChevronRight size={20} className="shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+      <div className="w-full max-w-xs space-y-3">
+        {availableGames.map((game, index) => (
+          <Button key={game.id} variant={index % 2 ? "secondary" : "primary"} onClick={() => onSelect(game.id)}>
+            {game.name}
+          </Button>
+        ))}
+      </div>
+
+      <section className="mt-12 w-full max-w-xs" aria-labelledby="premium-title">
+        <h2 id="premium-title" className="mb-3 font-body text-xs uppercase tracking-[0.2em] text-gray-300">Flere pakker</h2>
+        <div className="space-y-2">
+          {PREMIUM_PACKS.map((pack) => (
+            <button key={pack.id} onClick={() => onPremiumPreview(pack)} className="w-full rounded-2xl bg-gray-50 px-5 py-3 text-left transition active:scale-[0.98]">
+              <span className="block font-display text-sm font-bold text-gray-500">{pack.name}</span>
+              <span className="mt-0.5 block text-xs text-gray-300">Forhåndsvisning</span>
             </button>
           ))}
-        </section>
+        </div>
+      </section>
 
-        <section className="mt-8" aria-labelledby="premium-title">
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <p className="flex items-center gap-1.5 text-xs font-bold uppercase text-amber-700"><Crown size={15} aria-hidden="true" /> Premium</p>
-              <h2 id="premium-title" className="mt-1 font-display text-2xl font-bold">Flere pakker</h2>
-            </div>
-            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Kommer senere</span>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {PREMIUM_PACKS.map((pack) => (
-              <button key={pack.id} onClick={() => onPremiumPreview(pack)} className="min-h-40 overflow-hidden rounded-2xl border border-black/10 bg-white p-4 text-left shadow-sm transition active:scale-[0.98]">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-amber-100 text-amber-800"><LockKeyhole size={17} aria-hidden="true" /></span>
-                <span className="mt-5 block font-display text-base font-bold leading-tight">{pack.name}</span>
-                <span className="mt-1 block text-xs font-medium leading-snug text-slate-500">Forhåndsvis innhold</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
+      <p className="mt-12 max-w-xs font-body text-xs leading-relaxed text-gray-300">Spill utviklet av Torbjørn Hagland og Daniyal Chaudhry. Alle rettigheter reservert.</p>
     </main>
   );
 }

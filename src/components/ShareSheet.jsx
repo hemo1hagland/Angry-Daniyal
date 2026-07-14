@@ -81,12 +81,12 @@ export default function ShareSheet({ open, onClose, gameId, eventPack }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-title"
-        className="sheet-enter w-full max-w-sm rounded-t-[28px] bg-[#f7f5f1] px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 shadow-2xl sm:rounded-[28px]"
+        className="sheet-enter w-full max-w-sm rounded-t-2xl bg-white px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 shadow-2xl sm:rounded-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase text-emerald-700">Samle gjengen</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-gray-300">Samle gjengen</p>
             <h2 id="share-title" className="mt-1 font-display text-3xl font-bold text-slate-950">Del spillet</h2>
           </div>
           <button className="icon-button" onClick={closeSheet} aria-label="Lukk deling">
@@ -94,7 +94,7 @@ export default function ShareSheet({ open, onClose, gameId, eventPack }) {
           </button>
         </div>
 
-        <div className="mx-auto mt-5 aspect-square w-full max-w-[250px] overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-black/10">
+        <div className="mx-auto mt-5 aspect-square w-full max-w-[250px] overflow-hidden rounded-2xl bg-gray-50 p-3">
           {qrSrc ? <img src={qrSrc} alt="QR-kode til spillet" className="h-full w-full" /> : <div className="h-full w-full animate-pulse rounded-xl bg-slate-100" />}
         </div>
         <p className="mx-auto mt-3 max-w-xs text-center text-sm font-medium leading-snug text-slate-500">
