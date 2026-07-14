@@ -114,8 +114,8 @@ export const GAMES = [
     accent: "#151515",
     premium: false,
     minPlayers: 2,
-    maxPlayers: 6,
-    highlights: ["2-6 spillere", "Norske utesteder", "Bonuskort og challenges"],
+    maxPlayers: 4,
+    highlights: ["2-4 spillere", "40 felt", "Ølglasset er valuta"],
   },
 ];
 
