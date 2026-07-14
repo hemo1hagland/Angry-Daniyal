@@ -105,7 +105,7 @@ export const GAMES = [
     accent: "#151515",
     premium: false,
     minPlayers: 2,
-    highlights: ["4 land", "9 spill", "Full regelguide"],
+    highlights: ["8 land", "17 spill", "Automatiske straffer"],
   },
 ];
 

@@ -3,6 +3,10 @@ export const INTERNATIONAL_COUNTRIES = [
   { id: "germany", name: "Tyskland", match: "Tyskland", description: "Bløffing og utendørs lagspill" },
   { id: "australia", name: "Australia", match: "Australia", description: "Tilfeldige og sosiale leker" },
   { id: "uk", name: "Storbritannia", match: "Storbritannia", description: "Klassiske pub- og kortleker" },
+  { id: "south-korea", name: "Sør-Korea", match: "Sør-Korea", description: "Raske telle- og rytmeleker" },
+  { id: "japan", name: "Japan", match: "Japan", description: "Kategorier, rytme og reaksjon" },
+  { id: "china", name: "Kina", match: "Kina", description: "Håndspill, terninger og bløffing" },
+  { id: "south-africa", name: "Sør-Afrika", match: "Sør-Afrika", description: "Moderne lokale festleker" },
 ];
 
 export const INTERNATIONAL_GAMES = [
@@ -132,6 +136,118 @@ export const INTERNATIONAL_GAMES = [
       "Den valgte spilleren tar avtalt konsekvens og starter neste runde.",
     ],
   },
+  {
+    id: "baskin-31",
+    name: "Baskin Robbins 31",
+    country: "Sør-Korea",
+    players: "3+ spillere",
+    duration: "5-15 min",
+    equipment: "Kun mobilen",
+    description: "Si ett, to eller tre tall. Den som blir tvunget til å si 31 taper.",
+    steps: [
+      "Aktiv spiller velger om turen skal inneholde ett, to eller tre tall.",
+      "Neste spiller fortsetter fra neste tall.",
+      "Spilleren som sier 31 får drikkestraffen og starter neste runde.",
+    ],
+  },
+  {
+    id: "three-six-nine",
+    name: "3-6-9",
+    country: "Sør-Korea",
+    players: "3+ spillere",
+    duration: "5-15 min",
+    equipment: "Kun mobilen",
+    description: "Tell på rundgang, men klapp i stedet for tall som inneholder 3, 6 eller 9.",
+    steps: [
+      "Appen viser neste tall og hvem sin tur det er.",
+      "Inneholder tallet 3, 6 eller 9, skal spilleren klappe i stedet for å si tallet.",
+      "Trykk feil hvis noen sier feil, glemmer klappet eller nøler.",
+    ],
+  },
+  {
+    id: "yamanote",
+    name: "Yamanote",
+    country: "Japan",
+    players: "3+ spillere",
+    duration: "5-15 min",
+    equipment: "Kun mobilen",
+    description: "Velg en kategori og svar i fast rytme uten gjentakelser.",
+    steps: [
+      "Appen velger en kategori for runden.",
+      "Svar på rundgang i rytmen: klapp, klapp, svar.",
+      "Gjentakelse, feil kategori eller nøling gir drikkestraff.",
+    ],
+  },
+  {
+    id: "pin-pon-pan",
+    name: "Pin-Pon-Pan",
+    country: "Japan",
+    players: "4+ spillere",
+    duration: "5-10 min",
+    equipment: "Kun mobilen",
+    description: "Følg ordrekken Pin, Pon, Pan. Pan-spilleren peker ut hvem som fortsetter.",
+    steps: [
+      "Tre spillere sier Pin, Pon og Pan i rekkefølge.",
+      "Den som sier Pan peker samtidig på neste spiller.",
+      "Feil ord, feil spiller eller nøling gir drikkestraff.",
+    ],
+  },
+  {
+    id: "fifteen-twenty",
+    name: "15-15-20",
+    country: "Kina",
+    players: "2+ spillere",
+    duration: "5-15 min",
+    equipment: "Hender",
+    description: "To spillere viser null, én eller to hender og gjetter totalsummen.",
+    steps: [
+      "To spillere møtes. Hver viser null, én eller to åpne hender samtidig.",
+      "Den aktive spilleren roper 0, 5, 10, 15 eller 20 før hendene vises.",
+      "Riktig totalsum vinner runden. Taperen får drikkestraff.",
+    ],
+  },
+  {
+    id: "chui-niu",
+    name: "Chui Niu",
+    country: "Kina",
+    players: "3+ spillere",
+    duration: "15-25 min",
+    equipment: "Digitale terninger",
+    description: "Kinesisk bløffespill med fem skjulte terninger og stadig høyere påstander.",
+    steps: [
+      "Aktiv spiller ser fem skjulte terninger og sier en påstand høyt.",
+      "Neste spiller kan tro på påstanden og rulle videre, eller utfordre.",
+      "Når kastet avsløres, får bløfferen eller utfordreren drikkestraffen.",
+    ],
+  },
+  {
+    id: "lucky-shot",
+    name: "Lucky Shot",
+    country: "Sør-Afrika",
+    players: "2+ spillere",
+    duration: "5-15 min",
+    equipment: "Mynt og mobilen",
+    description: "En moderne sør-afrikansk festlek der et myntknips bestemmer utfallet.",
+    steps: [
+      "Aktiv spiller knipser en mynt over bordet eller trykker direkte i appen.",
+      "Appen trekker et tilfeldig felt med vinner, taper eller fellesstraff.",
+      "Straffeskjermen viser nøyaktig hvem som tar hvor mange slurker.",
+    ],
+  },
+  {
+    id: "drink-or-tell",
+    name: "Drink or Tell",
+    country: "Sør-Afrika",
+    players: "3+ spillere",
+    duration: "10-20 min",
+    equipment: "Kun mobilen",
+    description: "En moderne spørsmålslek inspirert av det sør-afrikanske formatet Drink or Tell the Truth.",
+    steps: [
+      "Appen velger en spiller og viser et direkte spørsmål.",
+      "Spilleren svarer ærlig eller velger å drikke.",
+      "Velges drikke, viser appen en tydelig straff på én til tre slurker.",
+    ],
+  },
 ];
 
 export const KING_RULES = {
@@ -161,4 +277,23 @@ export const GOVERNOR_RULES = [
   "Hopp over 4 helt.",
   "Si et dyr i stedet for 10.",
   "Alle sier 21 sammen.",
+];
+
+export const YAMANOTE_CATEGORIES = [
+  "Land", "Filmer", "Artister", "Byer", "Matretter", "Fotballag", "Kjendiser", "Ting på et kjøkken",
+];
+
+export const DRINK_OR_TELL_QUESTIONS = [
+  "Hva er den dårligste unnskyldningen du har brukt for å avlyse en avtale?",
+  "Hvem i rommet ville du ringt først hvis du havnet i trøbbel?",
+  "Hva er det pinligste du har sendt til feil person?",
+  "Hva er den rareste vanen du aldri forteller folk om?",
+  "Hvem var din første ordentlige kjendiscrush?",
+  "Hva er det mest impulsive kjøpet du har gjort?",
+  "Når løy du sist for å slippe unna noe?",
+  "Hva er din mest overvurderte favoritt?",
+  "Hvilken personlighetstype går du alltid på, selv om du vet bedre?",
+  "Hva er den kleineste daten du har vært på?",
+  "Hva er den største tabben du har gjort på fest?",
+  "Hvem i gruppen tror du kjenner deg best?",
 ];
