@@ -1,7 +1,4 @@
-/**
- * Product switches live here so payments and premium access can be added
- * without coupling purchase logic to the game screens.
- */
+/** Product switches are kept away from the game screens. */
 export const PREMIUM_ENABLED = false;
 
 export const PRODUCT = {
@@ -114,14 +111,14 @@ export const PREMIUM_PACKS = [
     id: "after-dark",
     name: "Etter midnatt",
     description: "25 drøyere spørsmål om dating, hemmeligheter og pinlige valg.",
-    priceNok: 29,
+    priceNok: 0,
     preview: ["Direkte dating-spørsmål", "Pinlige meldinger", "Hemmeligheter i gruppen"],
   },
   {
     id: "event-maker",
     name: "Lag egne kort",
     description: "Bygg og lagre deres egne utfordringer til neste kveld.",
-    priceNok: 49,
+    priceNok: 0,
     preview: ["Egne spørsmål", "Egne regler", "Delbar eventpakke"],
   },
 ];

@@ -14,7 +14,7 @@ export default function PremiumPreview({ pack, onClose, onStart }) {
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 sm:items-center sm:p-5" role="presentation" onMouseDown={onClose}>
       <section role="dialog" aria-modal="true" aria-labelledby="premium-preview-title" className="sheet-enter w-full max-w-sm rounded-t-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:rounded-2xl" onMouseDown={(event) => event.stopPropagation()}>
         <div className="flex items-start justify-between">
-          <span className="font-body text-xs uppercase tracking-[0.2em] text-gray-300">Forhåndsvisning</span>
+          <span className="font-body text-xs uppercase tracking-[0.2em] text-gray-400">Gratis pakke</span>
           <button className="icon-button" onClick={onClose} aria-label="Lukk forhåndsvisning"><X size={20} aria-hidden="true" /></button>
         </div>
         <h2 id="premium-preview-title" className="mt-4 font-display text-3xl font-bold">{pack.name}</h2>
@@ -22,7 +22,7 @@ export default function PremiumPreview({ pack, onClose, onStart }) {
         <ul className="mt-5 space-y-2">
           {pack.preview.map((item) => <li key={item} className="rounded-xl bg-gray-100 px-4 py-3 text-sm font-bold text-gray-600">{item}</li>)}
         </ul>
-        <Button onClick={() => onStart(pack)} className="mt-5">Åpne pakken</Button>
+        <Button onClick={() => onStart(pack)} className="mt-5">Start gratis</Button>
       </section>
     </div>
   );
