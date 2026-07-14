@@ -6,7 +6,7 @@ export default function ResultView({ penalty, onNext, onMenu }) {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
       {/* Sint ansikt */}
-      <div className="mb-6 animate-burst">
+      <div className="mb-6">
         <div className="mx-auto h-28 w-28 overflow-hidden rounded-3xl bg-red-50 ring-2 ring-red-300/40 shadow-[0_0_30px_-6px_rgba(239,68,68,0.3)]">
           <img
             src={FACE.angry}
@@ -16,20 +16,16 @@ export default function ResultView({ penalty, onNext, onMenu }) {
         </div>
       </div>
 
-      <h2 className="mb-2 animate-floatUp font-display text-5xl font-bold tracking-tighter text-gray-900">
+      <h2 className="mb-2 font-display text-5xl font-bold tracking-tighter text-gray-900">
         Du tapte!
       </h2>
       <p
-        className="mb-8 animate-floatUp font-body text-gray-400"
-        style={{ animationDelay: "0.08s" }}
+        className="mb-8 font-body text-gray-400"
       >
-        Du traff det sinte ansiktet. BOM.
+        Du traff det sinte ansiktet.
       </p>
 
-      <div
-        className="mb-12 animate-countUp"
-        style={{ animationDelay: "0.25s" }}
-      >
+      <div className="mb-12">
         <div className="rounded-[20px] bg-gray-50 px-10 py-6 shadow-sm ring-1 ring-gray-200/60">
           <p className="mb-1 font-body text-sm uppercase tracking-[0.2em] text-gray-400">
             Straff

@@ -3,7 +3,7 @@ import Face from "../components/Face";
 
 const COLS = { 9: 3, 16: 4, 25: 5, 36: 6 };
 
-export default function FaceGame({ antall, onLose, onBonus, onBack, runde, players = [], starter }) {
+export default function FaceGame({ antall, onLose, onBonus, onBack, runde }) {
   const [angryIndex] = useState(() => Math.floor(Math.random() * antall));
   const [bonusIndex] = useState(() => (angryIndex + 1 + Math.floor(Math.random() * (antall - 1))) % antall);
   const [faceStates, setFaceStates] = useState(() => Array(antall).fill("idle"));
@@ -14,19 +14,19 @@ export default function FaceGame({ antall, onLose, onBonus, onBack, runde, playe
     if (i === angryIndex) {
       setFaceStates((prev) => {
         const next = [...prev];
-        next[i] = "boom";
+        next[i] = "angry";
         return next;
       });
-      if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
-      setTimeout(() => onLose(), 900);
+      if (navigator.vibrate) navigator.vibrate(50);
+      setTimeout(() => onLose(), 450);
     } else if (i === bonusIndex) {
       setFaceStates((prev) => {
         const next = [...prev];
         next[i] = "bonus";
         return next;
       });
-      if (navigator.vibrate) navigator.vibrate([35, 30, 35, 30, 90]);
-      setTimeout(() => onBonus(), 850);
+      if (navigator.vibrate) navigator.vibrate(35);
+      setTimeout(() => onBonus(), 450);
     } else {
       if (navigator.vibrate) navigator.vibrate(15);
       setFaceStates((prev) => {
@@ -38,10 +38,8 @@ export default function FaceGame({ antall, onLose, onBonus, onBack, runde, playe
   };
 
   const cols = COLS[antall] || 4;
-  const isBooming = faceStates.includes("boom");
-
   return (
-    <div className={`relative flex min-h-[100dvh] flex-col overflow-hidden px-5 py-8 ${isBooming ? "animate-shake" : ""}`}>
+    <div className="relative flex min-h-[100dvh] flex-col overflow-hidden px-5 py-8">
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={onBack}
@@ -59,7 +57,7 @@ export default function FaceGame({ antall, onLose, onBonus, onBack, runde, playe
           Trykk på et ansikt
         </h2>
         <p className="mt-1 font-body text-gray-400">
-          {players.length ? `${starter || players[(runde - 1) % players.length]} starter. Send videre etter hvert trykk.` : "Én av dem er sur. Tør du?"}
+          Én av dem er sur. Send mobilen videre etter hvert trykk.
         </p>
       </div>
 
@@ -75,13 +73,6 @@ export default function FaceGame({ antall, onLose, onBonus, onBack, runde, playe
           />
         ))}
       </div>
-      {isBooming && (
-        <div className="pointer-events-none absolute inset-0 z-50 grid place-items-center bg-black/25">
-          <div className="bomb-shockwave" />
-          <div className="bomb-shockwave bomb-shockwave-late" />
-          <div className="bomb-core"><span>BOM</span></div>
-        </div>
-      )}
     </div>
   );
 }
