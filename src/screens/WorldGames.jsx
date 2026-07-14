@@ -4,6 +4,7 @@ import Dices from "lucide-react/dist/esm/icons/dices.js";
 import Globe2 from "lucide-react/dist/esm/icons/globe-2.js";
 import RotateCcw from "lucide-react/dist/esm/icons/rotate-ccw.js";
 import Button from "../components/Button";
+import CountryFlag from "../components/CountryFlag";
 import { DRINK_OR_TELL_QUESTIONS, GOVERNOR_RULES, INTERNATIONAL_COUNTRIES, INTERNATIONAL_GAMES, KING_RULES, YAMANOTE_CATEGORIES } from "../data/internationalGames";
 
 const shuffle = (items) => {
@@ -548,7 +549,7 @@ export default function WorldGames({ onBack, onComplete }) {
             const count = INTERNATIONAL_GAMES.filter((game) => game.country.includes(country.match)).length;
             return (
               <button key={country.id} onClick={() => setSelectedCountry(country)} className="flex w-full items-center gap-4 rounded-2xl bg-gray-100 px-4 py-4 text-left transition active:scale-[0.98]">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white font-display text-lg font-bold text-gray-700">{country.name.charAt(0)}</span>
+                <CountryFlag countryId={country.id} />
                 <span className="min-w-0 flex-1"><span className="block font-display text-lg font-bold text-gray-800">{country.name}</span><span className="block truncate text-xs text-gray-400">{country.description}</span></span>
                 <span className="text-right"><span className="block font-display text-lg font-bold text-gray-700">{count}</span><span className="block text-[10px] text-gray-400">spill</span></span>
               </button>
@@ -564,14 +565,14 @@ export default function WorldGames({ onBack, onComplete }) {
     <main className="min-h-full overflow-y-auto bg-white px-5 pb-12 pt-5">
       <TopBar title={selectedCountry.name} subtitle={`${countryGames.length} kjente spill`} onBack={() => setSelectedCountry(null)} />
       <section className="mx-auto mt-8 max-w-sm text-center">
-        <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gray-900 text-white"><Globe2 size={28} /></div>
+        <CountryFlag countryId={selectedCountry.id} large className="mx-auto" />
         <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-gray-900">Leker fra {selectedCountry.name}</h2>
         <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-gray-400">Velg en lek for regler, oppsett og spillmodus.</p>
       </section>
       <section className="mx-auto mt-8 max-w-sm space-y-2" aria-label="Internasjonale drikkeleker">
         {countryGames.map((game) => (
           <button key={game.id} onClick={() => { setSelected(game); setPhase("guide"); }} className="flex w-full items-center gap-4 rounded-2xl bg-gray-100 px-4 py-4 text-left transition active:scale-[0.98]">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white font-display text-lg font-bold text-gray-700">{game.country.charAt(0)}</span>
+            <CountryFlag countryId={selectedCountry.id} />
             <span className="min-w-0 flex-1"><span className="block font-display text-lg font-bold text-gray-800">{game.name}</span><span className="block truncate text-xs text-gray-400">{game.country} · {game.players}</span></span>
             <span className="text-xl text-gray-300">›</span>
           </button>

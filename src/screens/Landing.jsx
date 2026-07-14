@@ -17,9 +17,8 @@ export default function Landing({ onStart, onBack, initialCount = 16, initialPen
         ← Meny
       </button>
 
-      {/* Logo */}
-      <h1 className="mb-6 font-display text-8xl font-bold tracking-tighter text-gray-900">
-        Vors
+      <h1 className="mb-6 max-w-full font-display text-5xl font-bold tracking-tighter text-gray-900">
+        Angry-Daniyal
       </h1>
 
       <p className="mb-1 font-body text-lg text-gray-500">
@@ -52,7 +51,7 @@ export default function Landing({ onStart, onBack, initialCount = 16, initialPen
 
       <div className="mb-10 w-full max-w-xs">
         <p className="mb-3 font-body text-sm uppercase tracking-[0.2em] text-gray-400">
-          Valgfri straff
+          Antall slurker
         </p>
         <div className="grid grid-cols-5 gap-2">
           {PENALTY_OPTIONS.map((option) => (

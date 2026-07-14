@@ -13,6 +13,7 @@ import { trackEvent } from "./lib/analytics";
 const Landing = lazy(() => import("./screens/Landing"));
 const FaceGame = lazy(() => import("./screens/FaceGame"));
 const ResultView = lazy(() => import("./screens/ResultView"));
+const FaceBonus = lazy(() => import("./screens/FaceBonus"));
 const HorseRace = lazy(() => import("./screens/HorseRace"));
 const PubGolf = lazy(() => import("./screens/PubGolf"));
 const SpinWheel = lazy(() => import("./screens/SpinWheel"));
@@ -41,6 +42,7 @@ export default function App() {
   const [antall, setAntall] = usePersistentState("vors.face.count", 16);
   const [penalty, setPenalty] = usePersistentState("vors.face.penalty", 2);
   const [runde, setRunde] = useState(0);
+  const [faceStarter, setFaceStarter] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [premiumPack, setPremiumPack] = useState(null);
   const [questionMode, setQuestionMode] = useState("standard");
@@ -93,11 +95,13 @@ export default function App() {
   const startFaceGame = (valgtAntall, valgtPenalty) => {
     setAntall(valgtAntall);
     setPenalty(valgtPenalty);
+    setFaceStarter(null);
     setRunde((round) => round + 1);
     setScreen("face-game");
   };
 
-  const playFaceAgain = () => {
+  const playFaceAgain = (nextStarter = null) => {
+    setFaceStarter(nextStarter);
     setRunde((round) => round + 1);
     setScreen("face-game");
     trackEvent("play_again_clicked", { gameId: "face" });
@@ -112,8 +116,9 @@ export default function App() {
         {screen === "games" && <GameMenu onSelect={selectGame} onBack={goHome} onShare={() => setShareOpen(true)} eventPack={eventPack} onPremiumPreview={setPremiumPack} />}
         {screen === "setup" && selectedGame && <PlayerSetup game={selectedGame} players={players} onPlayersChange={setPlayers} onStart={launchGame} onBack={() => setScreen("games")} />}
         {screen === "face-settings" && <Landing initialCount={antall} initialPenalty={penalty} onStart={startFaceGame} onBack={() => setScreen("setup")} />}
-        {screen === "face-game" && <FaceGame antall={antall} runde={runde} players={players} onLose={() => { completeGame("face"); setScreen("face-result"); }} onBack={() => setScreen("face-settings")} />}
-        {screen === "face-result" && <ResultView penalty={penalty} onNext={playFaceAgain} onMenu={() => setScreen("games")} />}
+        {screen === "face-game" && <FaceGame antall={antall} runde={runde} players={players} starter={faceStarter} onLose={() => { completeGame("face"); setScreen("face-result"); }} onBonus={() => setScreen("face-bonus")} onBack={() => setScreen("face-settings")} />}
+        {screen === "face-result" && <ResultView penalty={penalty} onNext={() => playFaceAgain()} onMenu={() => setScreen("games")} />}
+        {screen === "face-bonus" && <FaceBonus players={players} onNext={playFaceAgain} onMenu={() => setScreen("games")} />}
         {screen === "horse" && <HorseRace {...gameProps} />}
         {screen === "pubgolf" && <PubGolf {...gameProps} />}
         {screen === "wheel" && <SpinWheel {...gameProps} />}

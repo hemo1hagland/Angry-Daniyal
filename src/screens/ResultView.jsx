@@ -23,7 +23,7 @@ export default function ResultView({ penalty, onNext, onMenu }) {
         className="mb-8 animate-floatUp font-body text-gray-400"
         style={{ animationDelay: "0.08s" }}
       >
-        Du traff det sinte ansiktet.
+        Du traff det sinte ansiktet. BOM.
       </p>
 
       <div
@@ -38,7 +38,7 @@ export default function ResultView({ penalty, onNext, onMenu }) {
             {penalty}
           </p>
           <p className="mt-1 font-body text-lg text-gray-500">
-            {penalty === 1 ? "valgfri utfordring" : "valgfrie utfordringer"}
+            {penalty === 1 ? "slurk" : "slurker"}
           </p>
         </div>
       </div>

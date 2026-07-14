@@ -82,6 +82,29 @@ select:focus-visible {
   transform: scale(0.94);
 }
 
+.country-flag {
+  display: block;
+  width: 52px;
+  height: 36px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid rgb(0 0 0 / 0.1);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+.country-flag-large {
+  width: 72px;
+  height: 48px;
+}
+
+.country-flag svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .stat-tile {
   display: flex;
   min-width: 0;
@@ -151,6 +174,48 @@ select:focus-visible {
 @keyframes sheetEnter {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bombCore {
+  0% { opacity: 0; transform: scale(0.15) rotate(-12deg); }
+  45% { opacity: 1; transform: scale(1.25) rotate(4deg); }
+  100% { opacity: 0; transform: scale(1.7) rotate(0); }
+}
+
+@keyframes bombWave {
+  0% { opacity: 0.85; transform: scale(0.2); }
+  100% { opacity: 0; transform: scale(4.5); }
+}
+
+.bomb-core {
+  position: absolute;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-items: center;
+  border-radius: 50%;
+  background: #151515;
+  color: #fff;
+  box-shadow: 0 0 0 14px #ef5b45, 0 0 0 26px rgb(239 91 69 / 0.25);
+  animation: bombCore 0.85s ease-out both;
+}
+
+.bomb-core span {
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.bomb-shockwave {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 7px solid #ef5b45;
+  border-radius: 50%;
+  animation: bombWave 0.75s ease-out both;
+}
+
+.bomb-shockwave-late {
+  animation-delay: 0.12s;
 }
 
 .sheet-enter {

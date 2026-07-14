@@ -10,7 +10,7 @@ export const PRODUCT = {
   publicUrl: "https://angry-daniyal.vercel.app/",
   tagline: "Partyspill for hele gjengen",
   responsibleUse:
-    "Spill ansvarlig. Alkohol er valgfritt. Aldri press noen til å delta.",
+    "Spill ansvarlig. Aldri press noen til å delta.",
   oneTimePriceNok: 49,
   packPriceRangeNok: [19, 29],
 };
@@ -32,7 +32,7 @@ export const PRODUCT = {
 export const GAMES = [
   {
     id: "face",
-    name: "Ansiktsspillet",
+    name: "Angry-Daniyal",
     description: "Send mobilen rundt. Ett ansikt avslører taperen.",
     category: "quick",
     icon: "faces",
@@ -98,7 +98,7 @@ export const GAMES = [
   },
   {
     id: "world",
-    name: "Verdensleker",
+    name: "Haglands drikkelek",
     description: "Velg land og prøv kjente drikkeleker fra andre deler av verden.",
     category: "choice",
     icon: "globe",

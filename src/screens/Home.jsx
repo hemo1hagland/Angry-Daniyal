@@ -37,8 +37,7 @@ export default function Home({ onStart, onShare, eventPack }) {
 
       {eventPack.logo && <img src={eventPack.logo} alt={eventPack.name} className="mb-6 h-9 max-w-40 object-contain" />}
       <h1 className="mb-6 font-display text-8xl font-bold tracking-tighter text-gray-900">{PRODUCT.name}</h1>
-      <p className="mb-1 max-w-xs font-body text-lg text-gray-500">Velg spill og send mobilen rundt bordet.</p>
-      <p className="mb-12 max-w-xs font-body text-lg text-gray-400">Ingen konto. Alkohol er valgfritt.</p>
+      <p className="mb-12 max-w-xs font-body text-lg text-gray-500">Velg spill og send mobilen rundt bordet.</p>
 
       <div className="w-full max-w-xs">
         <Button onClick={onStart}>Start spill</Button>
