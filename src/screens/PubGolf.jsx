@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Info from "lucide-react/dist/esm/icons/info.js";
 import Shuffle from "lucide-react/dist/esm/icons/shuffle.js";
 import Button from "../components/Button";
 import { buildPubGolfCourse, PUB_GOLF_CHALLENGES, PUB_GOLF_PRESETS } from "../data/pubGolfCourse";
@@ -40,7 +41,38 @@ function Leaderboard({ teams, scores, currentHole, onClose }) {
   );
 }
 
-function ChallengePicker({ holes, holeIndex, onChoose, onClose }) {
+function HoleInfo({ hole, holeNumber, onClose }) {
+  return (
+    <div className="absolute inset-0 z-50 flex items-end bg-black/45 p-3" role="presentation" onMouseDown={onClose}>
+      <section className="sheet-enter w-full rounded-2xl bg-white p-5 text-left" role="dialog" aria-modal="true" aria-labelledby="hole-info-title" onMouseDown={(event) => event.stopPropagation()}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-gray-400">{holeNumber ? `Hull ${holeNumber}` : "Utfordring"} · Par {hole.par}</p>
+            <h2 id="hole-info-title" className="mt-1 font-display text-3xl font-bold text-gray-900">{hole.title}</h2>
+          </div>
+          <button onClick={onClose} className="min-h-11 shrink-0 rounded-full bg-gray-100 px-4 text-sm text-gray-500">Lukk</button>
+        </div>
+
+        <div className="mt-6 space-y-5">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Slik gjør dere</p>
+            <p className="mt-2 text-sm font-semibold leading-relaxed text-gray-700">{hole.task}</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Regel</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">{hole.rule}</p>
+          </div>
+          <div className="rounded-2xl bg-gray-100 px-4 py-4">
+            <p className="font-display text-base font-bold text-gray-800">Slik føres scoren</p>
+            <p className="mt-1 text-xs leading-relaxed text-gray-500">Start på {hole.par} slag. Juster scoren dersom regelen gir ekstra slag eller slag under par. Lavest totalscore vinner.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ChallengePicker({ holes, holeIndex, onChoose, onInfo, onClose }) {
   const selectedIds = new Set(holes.filter((_, index) => index !== holeIndex).map((hole) => hole.id));
 
   return (
@@ -57,13 +89,16 @@ function ChallengePicker({ holes, holeIndex, onChoose, onClose }) {
           {PUB_GOLF_CHALLENGES.filter((challenge) => !selectedIds.has(challenge.id)).map((challenge) => {
             const selected = holes[holeIndex]?.id === challenge.id;
             return (
-              <button key={challenge.id} onClick={() => onChoose(challenge)} className={`w-full rounded-2xl px-4 py-3 text-left transition active:scale-[0.98] ${selected ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700"}`}>
-                <span className="flex items-center justify-between gap-3">
-                  <span className="font-display text-base font-bold">{challenge.title}</span>
-                  <span className={`shrink-0 text-xs font-bold ${selected ? "text-white/60" : "text-gray-400"}`}>Par {challenge.par}</span>
-                </span>
-                <span className={`mt-1 block text-xs leading-relaxed ${selected ? "text-white/65" : "text-gray-400"}`}>{challenge.task}</span>
-              </button>
+              <div key={challenge.id} className={`flex items-center gap-2 rounded-2xl p-2 pl-4 ${selected ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700"}`}>
+                <button onClick={() => onChoose(challenge)} className="min-w-0 flex-1 py-1 text-left transition active:scale-[0.98]">
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="font-display text-base font-bold">{challenge.title}</span>
+                    <span className={`shrink-0 text-xs font-bold ${selected ? "text-white/60" : "text-gray-400"}`}>Par {challenge.par}</span>
+                  </span>
+                  <span className={`mt-1 block text-xs leading-relaxed ${selected ? "text-white/65" : "text-gray-400"}`}>{challenge.task}</span>
+                </button>
+                <button onClick={() => onInfo(challenge)} className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${selected ? "bg-white/10 text-white" : "bg-white text-gray-500"}`} aria-label={`Vis info om ${challenge.title}`} title="Vis detaljer"><Info size={18} /></button>
+              </div>
             );
           })}
         </div>
@@ -106,6 +141,7 @@ export default function PubGolf({ onBack, onComplete }) {
   const [jokers, setJokers] = useState({});
   const [currentHole, setCurrentHole] = useState(0);
   const [pickerIndex, setPickerIndex] = useState(null);
+  const [infoHole, setInfoHole] = useState(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const prepareCourse = () => {
@@ -224,14 +260,16 @@ export default function PubGolf({ onBack, onComplete }) {
                   <span className="block truncate font-display text-base font-bold">{hole.title}</span>
                   <span className={`block text-xs ${index === 0 ? "text-white/55" : "text-gray-400"}`}>Par {hole.par}</span>
                 </span>
-                {index === 0 ? <span className="px-2 text-xs font-bold text-white/55">Fast</span> : <button onClick={() => setPickerIndex(index)} className="min-h-10 rounded-xl bg-white px-3 text-xs font-bold text-gray-600">Bytt</button>}
+                <button onClick={() => setInfoHole({ hole, number: index + 1 })} className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${index === 0 ? "bg-white/10 text-white" : "bg-white text-gray-500"}`} aria-label={`Vis info om ${hole.title}`} title="Vis detaljer"><Info size={17} /></button>
+                {index === 0 ? <span className="px-1 text-xs font-bold text-white/55">Fast</span> : <button onClick={() => setPickerIndex(index)} className="min-h-10 rounded-xl bg-white px-3 text-xs font-bold text-gray-600">Bytt</button>}
               </div>
             ))}
           </div>
         </section>
 
         <Button onClick={startRound} className="mt-3 shrink-0">Start runden</Button>
-        {pickerIndex !== null && <ChallengePicker holes={holes} holeIndex={pickerIndex} onChoose={chooseChallenge} onClose={() => setPickerIndex(null)} />}
+        {pickerIndex !== null && <ChallengePicker holes={holes} holeIndex={pickerIndex} onChoose={chooseChallenge} onInfo={(challenge) => setInfoHole({ hole: challenge, number: pickerIndex + 1 })} onClose={() => setPickerIndex(null)} />}
+        {infoHole && <HoleInfo hole={infoHole.hole} holeNumber={infoHole.number} onClose={() => setInfoHole(null)} />}
       </main>
     );
   }
@@ -258,7 +296,7 @@ export default function PubGolf({ onBack, onComplete }) {
       </div>
 
       <section className="shrink-0 py-3">
-        <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase text-gray-400"><span>Utfordring</span><span>·</span><span>Par {hole.par}</span></div>
+        <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase text-gray-400"><span>Utfordring</span><span>·</span><span>Par {hole.par}</span><button onClick={() => setInfoHole({ hole, number: currentHole + 1 })} className="grid h-8 w-8 place-items-center rounded-full bg-gray-100 text-gray-500" aria-label={`Vis info om ${hole.title}`} title="Vis detaljer"><Info size={15} /></button></div>
         <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-gray-900">{hole.title}</h2>
         <p className="mx-auto mt-3 max-w-sm text-sm font-semibold leading-relaxed text-gray-600">{hole.task}</p>
         <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-gray-400">{hole.rule}</p>
@@ -297,6 +335,7 @@ export default function PubGolf({ onBack, onComplete }) {
       </footer>
 
       {showLeaderboard && <Leaderboard teams={teams} scores={scores} currentHole={currentHole} onClose={() => setShowLeaderboard(false)} />}
+      {infoHole && <HoleInfo hole={infoHole.hole} holeNumber={infoHole.number} onClose={() => setInfoHole(null)} />}
     </main>
   );
 }
