@@ -115,7 +115,7 @@ export const GAMES = [
     premium: false,
     minPlayers: 2,
     maxPlayers: 4,
-    highlights: ["2-4 spillere", "40 felt", "Ølglasset er valuta"],
+    highlights: ["2-4 spillere", "40 felt", "500 ml øl-cash"],
   },
 ];
 

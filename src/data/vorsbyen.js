@@ -1,5 +1,6 @@
 export const STARTING_CURRENCY = 10;
 export const MAX_CURRENCY = 10;
+export const CASH_PER_LEVEL_ML = 50;
 export const PURCHASES_PER_TURN = 1;
 export const WINNING_NEIGHBORHOODS = 2;
 export const MAX_BUILDINGS = 5;
@@ -77,8 +78,10 @@ export const BONUS_CARDS = [
   { title: "Breezer Race", text: "Velg en motspiller. Først til 20 raske trykk på bordet vinner. Taperen tar 2 slurker." },
   { title: "Del ut", text: "Del ut 2 slurker til én eller to spillere." },
   { title: "To til deg", text: "Ta 2 slurker, eller stå over og gå til Fyllarresten." },
-  { title: "Rett til Start", text: "Flytt direkte til Start og fyll to nivåer tilbake i glasset.", effect: "start" },
-  { title: "Åpen regning", text: "Fyll ett nivå tilbake i glasset.", effect: "currency" },
+  { title: "Rett til Start", text: "Ta 3 slurker, flytt direkte til Start og få 300 ml tilbake i cashglasset.", effect: "start" },
+  { title: "Cashpåfyll", text: "Ta 3 slurker og få 150 ml i cashglasset.", effect: "currency", currencyAmount: 3 },
+  { title: "Mini-investering", text: "Ta 2 slurker og få 100 ml i cashglasset.", effect: "currency", currencyAmount: 2 },
+  { title: "Full tank", text: "Ta 5 slurker og fyll cashglasset til 500 ml.", effect: "refill" },
   { title: "Random drink", text: "Gruppen velger tre vanlige ingredienser. Lag en liten, tilfeldig drink eller gå til Fyllarresten." },
   { title: "Nynn en sang", text: "Nynn en sang. Første spiller som gjetter riktig deler ut 2 slurker." },
   { title: "Vits eller arrest", text: "Fortell en vits. Ler ingen, går du til Fyllarresten." },

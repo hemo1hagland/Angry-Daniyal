@@ -61,6 +61,11 @@ export default function App() {
     trackEvent("app_opened", { eventId: eventPack.id, source: deepLinkedGame ? "shared_game" : "direct" });
   }, [deepLinkedGame, eventPack]);
 
+  useEffect(() => {
+    document.body.classList.toggle("vorsopol-screen-active", screen === "vorsbyen");
+    return () => document.body.classList.remove("vorsopol-screen-active");
+  }, [screen]);
+
   const selectGame = (gameId) => {
     setSelectedGameId(gameId);
     if (gameId === "questions") setQuestionMode("standard");
@@ -113,7 +118,7 @@ export default function App() {
   const gameProps = { players, onBack: () => setScreen("games"), onComplete: completeGame };
 
   return (
-    <div className="phone-shell relative mx-auto w-full max-w-md overflow-hidden bg-white font-body shadow-2xl shadow-black/10">
+    <div className={`phone-shell relative mx-auto w-full overflow-hidden bg-white font-body ${screen === "vorsbyen" ? "fixed inset-0 z-40 h-screen min-h-screen max-w-none shadow-none" : "max-w-md shadow-2xl shadow-black/10"}`}>
       <Suspense fallback={<LoadingScreen />}>
         {screen === "home" && <Home onStart={() => setScreen("games")} onShare={() => setShareOpen(true)} eventPack={eventPack} />}
         {screen === "games" && <GameMenu onSelect={selectGame} onBack={goHome} onShare={() => setShareOpen(true)} eventPack={eventPack} onPremiumPreview={setPremiumPack} />}

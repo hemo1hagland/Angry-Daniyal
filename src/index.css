@@ -361,6 +361,17 @@ body.vorsopol-tv-active .phone-shell {
   }
 }
 
+body.vorsopol-screen-active {
+  padding: 0;
+  background: #fff;
+}
+
+body.vorsopol-screen-active .phone-shell {
+  height: 100dvh;
+  min-height: 100dvh;
+  border-radius: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

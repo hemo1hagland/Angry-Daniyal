@@ -25,6 +25,7 @@ import Button from "../components/Button";
 import {
   BOARD_SPACES,
   BONUS_CARDS,
+  CASH_PER_LEVEL_ML,
   CHALLENGE_CARDS,
   MAX_CURRENCY,
   MAX_BUILDINGS,
@@ -48,7 +49,9 @@ const PROPERTY_SPACES = BOARD_SPACES.filter((space) => space.type === "property"
 const PARTY_CARDS = [...CHALLENGE_CARDS, ...BONUS_CARDS];
 const JAIL_INDEX = BOARD_SPACES.findIndex((space) => space.type === "jail");
 const CORNER_INDEXES = new Set([0, 10, 20, 30]);
+const START_REWARD = 6;
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const formatCash = (levels) => `${levels * CASH_PER_LEVEL_ML} ml`;
 
 const getBoardPosition = (index) => {
   if (index === 0) return { gridRow: "1 / 3", gridColumn: "1 / 3" };
@@ -86,7 +89,7 @@ function DiceFace({ value, rolling }) {
   };
 
   return (
-    <span className={`grid h-12 w-12 grid-cols-3 grid-rows-3 gap-1 rounded-xl border-2 border-gray-900 bg-white p-1.5 shadow-md ${rolling ? "dice-rolling" : ""}`} aria-label={value ? `Terningen viser ${value}` : "Terning"}>
+    <span className={`grid h-12 w-12 grid-cols-3 grid-rows-3 gap-1 rounded-xl border-2 border-gray-900 bg-white p-1.5 shadow-md md:h-16 md:w-16 md:p-2 ${rolling ? "dice-rolling" : ""}`} aria-label={value ? `Terningen viser ${value}` : "Terning"}>
       {Array.from({ length: 9 }).map((_, index) => (
         <span key={index} className={`m-auto h-1.5 w-1.5 rounded-full ${pips[value]?.includes(index) ? "bg-gray-900" : "bg-transparent"}`} />
       ))}
@@ -96,10 +99,10 @@ function DiceFace({ value, rolling }) {
 
 function BeerGlass({ value, size = "small", animate = false }) {
   const level = Math.max(0, Math.min(100, (value / MAX_CURRENCY) * 100));
-  const dimensions = size === "large" ? "h-36 w-24" : size === "medium" ? "h-16 w-11" : "h-9 w-6";
+  const dimensions = size === "large" ? "h-36 w-24" : size === "responsive" ? "h-16 w-11 md:h-36 md:w-24" : size === "medium" ? "h-16 w-11" : "h-9 w-6";
 
   return (
-    <span className={`beer-glass ${dimensions}`} role="img" aria-label={`Ølglass med ${value} av ${MAX_CURRENCY} nivåer`}>
+    <span className={`beer-glass ${dimensions}`} role="img" aria-label={`Cashglass med ${formatCash(value)}`}>
       <span className={`beer-liquid ${animate ? "beer-fill-intro" : ""}`} style={{ "--beer-level": `${level}%`, height: `${level}%` }}>
         <span className="beer-foam" />
       </span>
@@ -141,8 +144,8 @@ function SpaceIcon({ type, size = 14 }) {
 
 function GameSheet({ eyebrow, title, text, children }) {
   return (
-    <div className="absolute inset-0 z-50 flex items-end bg-black/45 p-3" role="presentation">
-      <section className="sheet-enter max-h-[88%] w-full overflow-y-auto rounded-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-center" role="dialog" aria-modal="true">
+    <div className="absolute inset-0 z-50 flex items-end bg-black/45 p-3 md:items-center md:justify-center" role="presentation">
+      <section className="sheet-enter max-h-[88%] w-full overflow-y-auto rounded-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-center md:max-w-md md:p-7" role="dialog" aria-modal="true">
         {eyebrow && <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">{eyebrow}</p>}
         <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-gray-900">{title}</h2>
         {text && <p className="mx-auto mt-3 max-w-xs text-sm font-medium leading-relaxed text-gray-500">{text}</p>}
@@ -159,7 +162,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       name,
       piece: PIECES[index],
       position: 0,
-      currency: STARTING_CURRENCY,
+      currency: 0,
       inJail: false,
       active: true,
     }));
@@ -175,8 +178,15 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
   const [modal, setModal] = useState({ type: "beer-start" });
   const [winner, setWinner] = useState(null);
   const [tvMode, setTvMode] = useState(false);
+  const [cashActivated, setCashActivated] = useState(false);
 
   const currentPlayer = gamePlayers[currentIndex];
+
+  const activateCash = () => {
+    setGamePlayers((currentPlayers) => currentPlayers.map((player) => ({ ...player, currency: STARTING_CURRENCY })));
+    setCashActivated(true);
+    setModal(null);
+  };
 
   useEffect(() => () => document.body.classList.remove("vorsopol-tv-active"), []);
 
@@ -310,7 +320,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     if (completedNeighborhoods(currentIndex, nextOwnership).length >= WINNING_NEIGHBORHOODS) {
       declareWinner(nextPlayers[currentIndex]);
     } else {
-      advanceTurn(nextPlayers);
+      finishPayment(nextPlayers);
     }
   };
 
@@ -325,6 +335,24 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       ...ownership,
       [space.id]: { ...property, houses: property.houses + 1 },
     });
+    finishPayment(nextPlayers);
+  };
+
+  const finishPayment = (nextPlayers) => {
+    setGamePlayers(nextPlayers);
+    if (nextPlayers[currentIndex].currency === 0) {
+      setModal({ type: "refill", nextPlayers });
+      return;
+    }
+    advanceTurn(nextPlayers);
+  };
+
+  const refillCash = () => {
+    const sourcePlayers = modal?.nextPlayers || gamePlayers;
+    const nextPlayers = sourcePlayers.map((player, index) =>
+      index === currentIndex ? { ...player, currency: STARTING_CURRENCY } : player,
+    );
+    setGamePlayers(nextPlayers);
     advanceTurn(nextPlayers);
   };
 
@@ -332,8 +360,16 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     const nextPlayers = gamePlayers.map((player, index) =>
       index === currentIndex ? { ...player, currency: Math.max(0, player.currency - amount) } : player,
     );
-    setGamePlayers(nextPlayers);
-    advanceTurn(nextPlayers);
+    finishPayment(nextPlayers);
+  };
+
+  const payRent = (amount, ownerIndex) => {
+    const nextPlayers = gamePlayers.map((player, index) => {
+      if (index === currentIndex) return { ...player, currency: Math.max(0, player.currency - amount) };
+      if (index === ownerIndex) return { ...player, currency: player.currency + amount };
+      return player;
+    });
+    finishPayment(nextPlayers);
   };
 
   const completeCard = (card) => {
@@ -341,13 +377,19 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     if (card.effect === "start") {
       nextPlayers = gamePlayers.map((player, index) =>
         index === currentIndex
-          ? { ...player, position: 0, currency: Math.min(MAX_CURRENCY, player.currency + 2) }
+          ? { ...player, position: 0, currency: Math.min(MAX_CURRENCY, player.currency + START_REWARD) }
           : player,
       );
     } else if (card.effect === "currency") {
       nextPlayers = gamePlayers.map((player, index) =>
         index === currentIndex
-          ? { ...player, currency: Math.min(MAX_CURRENCY, player.currency + 1) }
+          ? { ...player, currency: Math.min(MAX_CURRENCY, player.currency + (card.currencyAmount || 1)) }
+          : player,
+      );
+    } else if (card.effect === "refill") {
+      nextPlayers = gamePlayers.map((player, index) =>
+        index === currentIndex
+          ? { ...player, currency: MAX_CURRENCY }
           : player,
       );
     }
@@ -376,12 +418,16 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
           });
         }
       } else {
+        const rent = space.buildable === false ? space.rent : Math.min(5, 1 + property.houses);
+        const transferAmount = Math.min(rent, MAX_CURRENCY - nextPlayers[property.owner].currency);
         setModal({
           type: "rent",
           space,
           owner: nextPlayers[property.owner],
-          rent: space.buildable === false ? space.rent : Math.min(5, 1 + property.houses),
-          canPay: nextPlayers[currentIndex].currency >= (space.buildable === false ? space.rent : Math.min(5, 1 + property.houses)),
+          ownerIndex: property.owner,
+          rent,
+          transferAmount,
+          canPay: nextPlayers[currentIndex].currency >= transferAmount,
         });
       }
       return;
@@ -408,7 +454,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     } else if (space.type === "pause") {
       setModal({ type: "message", title: space.name, text: "Ingen kostnad og ingen straff. Turen går videre.", nextPlayers });
     } else {
-      setModal({ type: "message", title: "Start", text: "Fyll to nivåer tilbake i ølglasset, opptil et fullt glass.", nextPlayers });
+      setModal({ type: "message", title: "Start", text: "Få 300 ml tilbake i cashglasset, opptil maks 500 ml.", nextPlayers });
     }
   };
 
@@ -439,7 +485,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
           ? {
               ...player,
               position,
-              currency: position === 0 ? Math.min(MAX_CURRENCY, player.currency + 2) : player.currency,
+              currency: position === 0 ? Math.min(MAX_CURRENCY, player.currency + START_REWARD) : player.currency,
             }
           : player,
       );
@@ -460,12 +506,12 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
     if (modal.type === "beer-start") {
       return (
-        <GameSheet eyebrow="Før dere starter" title="Åpne en øl hver" text={`Fyll glasset og del det i ${MAX_CURRENCY} nivåer. Når du kjøper eller bygger, tar du slurkene fra ditt eget glass.`}>
+        <GameSheet eyebrow="Inngangsbilletten" title="5 slurker gir 500 ml" text="Alle åpner en øl og tar 5 slurker. Da aktiveres et fullt cashglass på 500 ml som brukes til kjøp, hus, leie og avgifter.">
           <div className="flex justify-center py-2">
             <BeerGlass value={STARTING_CURRENCY} size="large" animate />
           </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-600">Fullt glass = {STARTING_CURRENCY} nivåer</p>
-          <Button onClick={() => setModal(null)}>Alle glass er fulle</Button>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-600">5 slurker = {formatCash(STARTING_CURRENCY)} cash</p>
+          <Button onClick={activateCash}>5 slurker tatt: få 500 ml</Button>
           <Button variant="secondary" onClick={() => setModal({ type: "rules" })}>Åpne regelboken</Button>
         </GameSheet>
       );
@@ -481,7 +527,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">2. Oppsett</h3>
-              <p className="mt-1">Spillet er for 2-4 personer. Alle åpner én øl, fyller glasset og starter på Start med {STARTING_CURRENCY} synlige nivåer. Glasset er spillvalutaen.</p>
+              <p className="mt-1">Spillet er for 2-4 personer. Alle åpner én øl og tar 5 slurker. Deretter får hver spiller {formatCash(STARTING_CURRENCY)} i sitt digitale cashglass.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">3. En tur</h3>
@@ -489,15 +535,15 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">4. Utesteder og hus</h3>
-              <p className="mt-1">Ledige steder kjøpes ved å ta riktig antall slurker fra glasset. Eieren vises med brikkefargen. På egne fargesteder kan du bygge fire hus og deretter hotell.</p>
+              <p className="mt-1">Ledige steder betales til banken. Leie flyttes derimot direkte fra betaleren til eierens cashglass med nøyaktig beløp, opptil 500 ml. På egne fargesteder kan du bygge fire hus og deretter hotell.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">5. Start og banken</h3>
-              <p className="mt-1">Hver gang brikken passerer eller lander på Start fylles to nivåer tilbake. Ingen kan ha mer enn ett fullt glass med {MAX_CURRENCY} nivåer.</p>
+              <p className="mt-1">Hver gang brikken passerer eller lander på Start får du 300 ml tilbake. Ingen kan ha mer enn {formatCash(MAX_CURRENCY)} i cashglasset.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">6. Bonusfelt</h3>
-              <p className="mt-1">Brettet har to Bonusfelt. Alle utfordringer trekkes kun der. Fullfør kortet, eller stå over og gå til Fyllarresten.</p>
+              <p className="mt-1">Brettet har to Bonusfelt. Noen kort gir ml-cash, men da må slurkene på kortet tas før beløpet fylles på. Står du over, går du til Fyllarresten.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">7. Hjørnefeltene</h3>
@@ -506,6 +552,10 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">8. Fyllarresten og straff</h3>
               <p className="mt-1">Ta en avtalt shot for å gå ut, eller stå over en tur. Står du over en drikkestraff, mister du ett utested. Ingen ryker i første runde.</p>
+            </section>
+            <section>
+              <h3 className="font-display text-base font-bold text-gray-900">9. Tomt cashglass</h3>
+              <p className="mt-1">Når cashglasset når 0 ml stopper turen. Ta 5 slurker for å fylle det tilbake til 500 ml før spillet fortsetter.</p>
             </section>
             <section>
               <h3 className="font-display text-base font-bold text-gray-900">Eierfarger</h3>
@@ -518,7 +568,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
               </div>
             </section>
           </div>
-          <Button onClick={() => setModal(null)}>Skjønner</Button>
+          <Button onClick={() => setModal(cashActivated ? null : { type: "beer-start" })}>{cashActivated ? "Skjønner" : "Til 5-slurkersstarten"}</Button>
         </GameSheet>
       );
     }
@@ -537,9 +587,9 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
     if (modal.type === "buy") {
       return (
-        <GameSheet eyebrow={NEIGHBORHOODS[modal.space.group].name} title={modal.space.name} text={`Kjøp stedet ved å ta ${modal.space.cost} nivå${modal.space.cost === 1 ? "" : "er"} fra ølglasset. Dette er turens ene kjøp.`}>
-          <div className="flex items-center justify-center gap-3 py-1"><BeerGlass value={currentPlayer.currency} size="medium" /><span className="font-display text-lg font-bold text-gray-800">{currentPlayer.currency}/{MAX_CURRENCY}</span></div>
-          <Button disabled={!modal.canBuy} onClick={() => buyProperty(modal.space)}>Drikk {modal.space.cost} og kjøp</Button>
+        <GameSheet eyebrow={NEIGHBORHOODS[modal.space.group].name} title={modal.space.name} text={`Kjøp stedet for ${formatCash(modal.space.cost)} fra cashglasset. Dette er turens ene kjøp.`}>
+          <div className="flex items-center justify-center gap-3 py-1"><BeerGlass value={currentPlayer.currency} size="medium" /><span className="font-display text-lg font-bold text-gray-800">{formatCash(currentPlayer.currency)}</span></div>
+          <Button disabled={!modal.canBuy} onClick={() => buyProperty(modal.space)}>Betal {formatCash(modal.space.cost)} og kjøp</Button>
           <Button variant="secondary" onClick={() => advanceTurn()}>Ikke kjøp</Button>
         </GameSheet>
       );
@@ -549,17 +599,18 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       const maxed = modal.property.houses >= MAX_BUILDINGS;
       const nextBuilding = modal.property.houses === 4 ? "hotell" : "hus";
       return (
-        <GameSheet eyebrow="Ditt sted" title={modal.space.name} text={maxed ? "Stedet har hotell og er fullt oppgradert." : `Neste ${nextBuilding} koster ${modal.upgradeCost} nivåer fra ølglasset.`}>
-          {!maxed && <Button disabled={!modal.canUpgrade} onClick={() => upgradeProperty(modal.space)}>Drikk {modal.upgradeCost} og bygg {nextBuilding}</Button>}
+        <GameSheet eyebrow="Ditt sted" title={modal.space.name} text={maxed ? "Stedet har hotell og er fullt oppgradert." : `Neste ${nextBuilding} koster ${formatCash(modal.upgradeCost)} fra cashglasset.`}>
+          {!maxed && <Button disabled={!modal.canUpgrade} onClick={() => upgradeProperty(modal.space)}>Betal {formatCash(modal.upgradeCost)} og bygg {nextBuilding}</Button>}
           <Button variant="secondary" onClick={() => advanceTurn()}>Avslutt turen</Button>
         </GameSheet>
       );
     }
 
     if (modal.type === "rent") {
+      const ownerIsFull = modal.transferAmount === 0;
       return (
-        <GameSheet eyebrow="Leie" title={`${modal.rent} nivåer fra glasset`} text={`${modal.space.name} eies av ${modal.owner.name}.`}>
-          <Button disabled={!modal.canPay} onClick={() => payFromGlass(modal.rent)}>Drikk og betal</Button>
+        <GameSheet eyebrow="Leie" title={ownerIsFull ? `${modal.owner.name} har fullt glass` : `${formatCash(modal.transferAmount)} til ${modal.owner.name}`} text={ownerIsFull ? "Ingen cash trekkes denne gangen." : `Vanlig leie er ${formatCash(modal.rent)}. Det trekkes aldri mer enn det er plass til i eierens cashglass.`}>
+          <Button disabled={!modal.canPay} onClick={() => payRent(modal.transferAmount, modal.ownerIndex)}>{ownerIsFull ? "Avslutt turen" : "Overfør leien"}</Button>
           <Button variant="secondary" onClick={declineDrinkPenalty}>Stå over</Button>
         </GameSheet>
       );
@@ -567,9 +618,18 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
 
     if (modal.type === "tax") {
       return (
-        <GameSheet eyebrow="Fast felt" title={modal.space.name} text={`Ta ${modal.space.penalty} nivå${modal.space.penalty === 1 ? "" : "er"} fra glasset, eller stå over og mist ett utested.`}>
-          <Button disabled={currentPlayer.currency < modal.space.penalty} onClick={() => payFromGlass(modal.space.penalty)}>Drikk og betal</Button>
+        <GameSheet eyebrow="Fast felt" title={modal.space.name} text={`Betal ${formatCash(modal.space.penalty)} fra cashglasset, eller stå over og mist ett utested.`}>
+          <Button disabled={currentPlayer.currency < modal.space.penalty} onClick={() => payFromGlass(modal.space.penalty)}>Betal avgiften</Button>
           <Button variant="secondary" onClick={declineDrinkPenalty}>Stå over</Button>
+        </GameSheet>
+      );
+    }
+
+    if (modal.type === "refill") {
+      return (
+        <GameSheet eyebrow="0 ml cash" title="Cashglasset er tomt" text="Ta 5 slurker. Da fylles cashglasset tilbake til 500 ml før neste tur eller ekstrakast.">
+          <div className="flex justify-center py-2"><BeerGlass value={0} size="large" /></div>
+          <Button onClick={refillCash}>5 slurker tatt: fyll 500 ml</Button>
         </GameSheet>
       );
     }
@@ -577,7 +637,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
     if (modal.type === "card") {
       return (
         <GameSheet eyebrow={modal.kind} title={modal.card.title} text={modal.card.text}>
-          <Button onClick={() => completeCard(modal.card)}>Fullført</Button>
+          <Button onClick={() => completeCard(modal.card)}>{["start", "currency", "refill"].includes(modal.card.effect) ? "Slurkene tatt: få cash" : "Fullført"}</Button>
           <Button variant="secondary" onClick={sendToJail}>Stå over: Fyllarresten</Button>
         </GameSheet>
       );
@@ -611,7 +671,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
       const houses = modal.property?.houses || 0;
       const buildable = modal.space.buildable !== false;
       return (
-        <GameSheet eyebrow={neighborhood.name} title={modal.space.name} text={modal.owner ? `${modal.owner.name} eier stedet. Leie: ${modal.space.buildable === false ? modal.space.rent : Math.min(5, 1 + houses)} nivåer.` : `Ledig. Pris: ${modal.space.cost} nivåer fra glasset.`}>
+        <GameSheet eyebrow={neighborhood.name} title={modal.space.name} text={modal.owner ? `${modal.owner.name} eier stedet. Leie: ${formatCash(modal.space.buildable === false ? modal.space.rent : Math.min(5, 1 + houses))}.` : `Ledig. Pris: ${formatCash(modal.space.cost)} fra cashglasset.`}>
           {buildable && <BuildingMeter count={houses} color={neighborhood.color} large />}
           <Button onClick={() => setModal(null)}>Lukk</Button>
         </GameSheet>
@@ -642,7 +702,7 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
   };
 
   return (
-    <main className={`relative flex h-full min-h-0 flex-col bg-white text-gray-900 ${tvMode ? "fixed inset-0 z-[70] h-screen w-screen overflow-hidden px-5 py-3" : "overflow-y-auto overscroll-contain px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"}`} style={{ WebkitOverflowScrolling: "touch" }}>
+    <main className={`relative flex h-full min-h-0 flex-col bg-white text-gray-900 ${tvMode ? "fixed inset-0 z-[70] h-screen w-screen overflow-hidden px-5 py-3" : "overflow-y-auto overscroll-contain px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:px-5 md:py-3"}`} style={{ WebkitOverflowScrolling: "touch" }}>
       <header className="flex h-11 shrink-0 items-center justify-between">
         <button onClick={onBack} className="flex h-10 items-center gap-1 rounded-full bg-gray-100 px-3 text-sm font-medium text-gray-500" aria-label="Tilbake til spillmenyen">
           <ArrowLeft size={16} aria-hidden="true" /> Meny
@@ -656,22 +716,22 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
         </button>
       </header>
 
-      <section className={`mt-2 flex shrink-0 gap-2 pb-2 ${tvMode ? "justify-center overflow-visible" : "overflow-x-auto"}`} aria-label="Spillere">
+      <section className={`mt-2 flex shrink-0 gap-2 pb-2 ${tvMode ? "justify-center overflow-visible" : "overflow-x-auto md:justify-center md:overflow-visible"}`} aria-label="Spillere">
         {gamePlayers.map((player, index) => (
-          <div key={player.name} className={`flex items-center gap-2 rounded-xl border-2 px-2.5 py-2 ${tvMode ? "min-w-[180px]" : "min-w-[148px]"} ${index === currentIndex ? "bg-gray-900 text-white" : "bg-white text-gray-600"} ${player.active ? "" : "opacity-35"}`} style={{ borderColor: index === currentIndex ? player.piece.color : `${player.piece.color}80` }}>
+          <div key={player.name} className={`flex items-center gap-2 rounded-xl border-2 px-2.5 py-2 ${tvMode ? "min-w-[180px]" : "min-w-[148px] md:min-w-[180px]"} ${index === currentIndex ? "bg-gray-900 text-white" : "bg-white text-gray-600"} ${player.active ? "" : "opacity-35"}`} style={{ borderColor: index === currentIndex ? player.piece.color : `${player.piece.color}80` }}>
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/15" style={{ color: index === currentIndex ? "#fff" : player.piece.color }}>
               <PieceIcon piece={player.piece} size={17} />
             </span>
             <span className="min-w-0">
               <span className="block truncate font-display text-xs font-bold">{player.name}</span>
-              <span className={`block text-[10px] font-semibold ${index === currentIndex ? "text-gray-300" : "text-gray-400"}`}>{player.currency}/{MAX_CURRENCY} glass · {ownedProperties(index).length} steder</span>
+              <span className={`block text-[10px] font-semibold ${index === currentIndex ? "text-gray-300" : "text-gray-400"}`}>{formatCash(player.currency)} cash · {ownedProperties(index).length} steder</span>
             </span>
             <BeerGlass value={player.currency} />
           </div>
         ))}
       </section>
 
-      <section className={`relative mx-auto mt-1 grid aspect-square shrink-0 overflow-hidden rounded-lg border-2 border-gray-900 bg-gray-50 ${tvMode ? "w-[min(78vh,88vw)] max-w-none" : "w-full max-w-[430px]"}`} style={{ gridTemplateColumns: "repeat(13, minmax(0, 1fr))", gridTemplateRows: "repeat(13, minmax(0, 1fr))" }} aria-label="Spillebrett med 40 felt">
+      <section className={`relative mx-auto mt-1 grid aspect-square shrink-0 overflow-hidden rounded-lg border-2 border-gray-900 bg-gray-50 ${tvMode ? "w-[min(78vh,88vw)] max-w-none" : "w-full max-w-[430px] md:w-[min(76vh,76vw)] md:max-w-none"}`} style={{ gridTemplateColumns: "repeat(13, minmax(0, 1fr))", gridTemplateRows: "repeat(13, minmax(0, 1fr))" }} aria-label="Spillebrett med 40 felt">
         {BOARD_SPACES.map((space, index) => {
           const property = space.type === "property" ? ownership[space.id] : null;
           const neighborhood = space.group ? NEIGHBORHOODS[space.group] : null;
@@ -681,15 +741,15 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
           return (
             <button key={space.id} onClick={() => space.type === "property" && openPropertyInfo(space)} disabled={space.type !== "property"} style={{ ...getBoardPosition(index), backgroundColor: owner ? `${owner.piece.color}12` : "#fff", boxShadow: owner ? `inset 0 0 0 ${tvMode ? 3 : 1.5}px ${owner.piece.color}` : undefined }} className={`relative min-h-0 min-w-0 overflow-hidden border border-gray-200 text-center disabled:opacity-100 ${isCorner ? "px-1 pb-2 pt-2" : "px-px pb-2 pt-1"}`} aria-label={space.type === "property" ? `Info om ${space.name}` : space.name}>
               {neighborhood && <span className={`absolute ${getColorBarClass(index)}`} style={{ background: neighborhood.color }} />}
-              {space.type !== "property" && <span className={`mx-auto grid place-items-center text-gray-700 ${isCorner ? "mb-1 h-7 w-7" : "mb-0.5 h-3 w-3"}`}><SpaceIcon type={space.type} size={isCorner ? (tvMode ? 25 : 18) : (tvMode ? 14 : 8)} /></span>}
-              <span className={`block break-words font-display font-bold leading-none text-gray-800 ${isCorner ? (tvMode ? "text-[12px]" : "text-[7px]") : (tvMode ? "text-[9px]" : "text-[5px]")}`}>{space.shortName || space.name}</span>
-              {space.type === "start" && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-gray-700" title="Spill med klokken"><ArrowRight size={tvMode ? 18 : 11} strokeWidth={2.8} /></span>}
-              {space.type === "property" && !property && <span className={`mt-0.5 block font-black text-gray-400 ${tvMode ? "text-[8px]" : "text-[4px]"}`}>{space.cost}</span>}
-              {owner && <span className={`absolute bottom-0.5 left-0.5 max-w-[62%] overflow-hidden whitespace-nowrap rounded-sm px-0.5 font-black text-white ${tvMode ? "text-[7px]" : "text-[4px]"}`} style={{ background: owner.piece.color }}>{tvMode ? owner.name : owner.name.slice(0, 2)}</span>}
+              {space.type !== "property" && <span className={`mx-auto grid place-items-center text-gray-700 ${isCorner ? "mb-1 h-7 w-7 md:h-9 md:w-9 md:[&_svg]:h-6 md:[&_svg]:w-6" : "mb-0.5 h-3 w-3 md:h-5 md:w-5 md:[&_svg]:h-3.5 md:[&_svg]:w-3.5"}`}><SpaceIcon type={space.type} size={isCorner ? (tvMode ? 25 : 18) : (tvMode ? 14 : 8)} /></span>}
+              <span className={`block break-words font-display font-bold leading-none text-gray-800 ${isCorner ? (tvMode ? "text-[12px]" : "text-[7px] md:text-[12px]") : (tvMode ? "text-[9px]" : "text-[5px] md:text-[9px]")}`}>{space.shortName || space.name}</span>
+              {space.type === "start" && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-gray-700" title="Spill med klokken"><ArrowRight className={tvMode ? "h-[18px] w-[18px]" : "h-[11px] w-[11px] md:h-[18px] md:w-[18px]"} strokeWidth={2.8} /></span>}
+              {space.type === "property" && !property && <span className={`mt-0.5 block font-black text-gray-400 ${tvMode ? "text-[8px]" : "text-[4px] md:text-[8px]"}`}>{formatCash(space.cost)}</span>}
+              {owner && <span className={`absolute bottom-0.5 left-0.5 max-w-[62%] overflow-hidden whitespace-nowrap rounded-sm px-0.5 font-black text-white ${tvMode ? "text-[7px]" : "text-[4px] md:text-[7px]"}`} style={{ background: owner.piece.color }}>{tvMode ? owner.name : <><span className="md:hidden">{owner.name.slice(0, 2)}</span><span className="hidden md:inline">{owner.name}</span></>}</span>}
               {owner && space.buildable !== false && <span className="absolute bottom-0.5 right-0.5"><BuildingMeter count={property.houses} color={neighborhood.color} /></span>}
               <span className="absolute right-0.5 top-0.5 flex max-w-[70%] flex-wrap justify-end gap-px">
                 {piecesHere.map(({ player, playerIndex }) => (
-                  <span key={player.name} className={`grid place-items-center rounded-full text-white shadow-sm ring-1 ring-white ${tvMode ? "h-[23px] w-[23px]" : "h-[13px] w-[13px]"} ${moving && playerIndex === currentIndex ? "piece-hopping" : ""}`} style={{ background: player.piece.color }} title={`${player.name}: ${player.piece.name}`}>
+                  <span key={player.name} className={`grid place-items-center rounded-full text-white shadow-sm ring-1 ring-white ${tvMode ? "h-[23px] w-[23px]" : "h-[13px] w-[13px] md:h-[23px] md:w-[23px] md:[&_svg]:h-[13px] md:[&_svg]:w-[13px]"} ${moving && playerIndex === currentIndex ? "piece-hopping" : ""}`} style={{ background: player.piece.color }} title={`${player.name}: ${player.piece.name}`}>
                     <PieceIcon piece={PIECES[playerIndex]} size={tvMode ? 13 : 7} />
                   </span>
                 ))}
@@ -705,10 +765,10 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
               <DiceFace value={dice[1]} rolling={rolling} />
             </span>
           ) : (
-            <BeerGlass value={currentPlayer.currency} size={tvMode ? "large" : "medium"} />
+            <BeerGlass value={currentPlayer.currency} size={tvMode ? "large" : "responsive"} />
           )}
-          <p className={`mt-2 max-w-full truncate font-display font-bold ${tvMode ? "text-2xl" : "text-sm"}`}>{currentPlayer.name}</p>
-          <p className={`font-semibold text-gray-400 ${tvMode ? "text-sm" : "text-[10px]"}`}>{currentPlayer.piece.name} · {currentPlayer.currency}/{MAX_CURRENCY} av glasset</p>
+          <p className={`mt-2 max-w-full truncate font-display font-bold ${tvMode ? "text-2xl" : "text-sm md:text-2xl"}`}>{currentPlayer.name}</p>
+          <p className={`font-semibold text-gray-400 ${tvMode ? "text-sm" : "text-[10px] md:text-sm"}`}>{currentPlayer.piece.name} · {formatCash(currentPlayer.currency)} cash</p>
           {rollAgainPrompt && <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-600">Dobbelt! Trill igjen</p>}
           {currentPlayer.inJail && <span className="mt-1 flex items-center gap-1 text-[10px] font-bold text-red-500"><Shield size={11} /> Fyllarresten</span>}
           <button onClick={rollDice} disabled={moving || !currentPlayer.active || Boolean(winner)} className="mt-3 flex min-h-10 w-full max-w-36 items-center justify-center gap-2 rounded-xl bg-gray-900 px-3 font-display text-sm font-bold text-white transition active:scale-95 disabled:opacity-40">
@@ -717,8 +777,8 @@ export default function Vorsbyen({ players, onBack, onComplete }) {
         </div>
       </section>
 
-      <footer className={`mt-3 flex min-h-0 flex-1 items-center justify-between gap-2 font-semibold text-gray-400 ${tvMode ? "text-sm" : "text-[11px]"}`}>
-        <span className="flex items-center gap-1"><Beer size={14} /> {currentPlayer.currency}/{MAX_CURRENCY} glass</span>
+      <footer className={`mt-3 flex min-h-0 flex-1 items-center justify-between gap-2 font-semibold text-gray-400 ${tvMode ? "text-sm" : "text-[11px] md:text-sm"}`}>
+        <span className="flex items-center gap-1"><Beer size={14} /> {formatCash(currentPlayer.currency)} cash</span>
         <span className="flex items-center gap-1"><House size={14} /> {PURCHASES_PER_TURN} kjøp/tur</span>
         <button onClick={() => setModal({ type: "screen" })} className="flex min-h-10 items-center gap-1.5 rounded-xl bg-gray-900 px-3 font-display text-xs font-bold text-white" aria-label="Del Vorsopol til skjerm">
           {tvMode ? <Maximize2 size={15} /> : <MonitorUp size={15} />} Del til skjerm
