@@ -1,16 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Face from "../components/Face";
 
 const COLS = { 9: 3, 16: 4, 25: 5, 36: 6 };
 
-export default function FaceGame({ antall, onLose, onBack, runde }) {
-  const [angryIndex, setAngryIndex] = useState(null);
-  const [faceStates, setFaceStates] = useState([]);
-
-  useEffect(() => {
-    setAngryIndex(Math.floor(Math.random() * antall));
-    setFaceStates(Array(antall).fill("idle"));
-  }, [antall, runde]);
+export default function FaceGame({ antall, onLose, onBack, runde, players = [] }) {
+  const [angryIndex] = useState(() => Math.floor(Math.random() * antall));
+  const [faceStates, setFaceStates] = useState(() => Array(antall).fill("idle"));
 
   const håndterTrykk = (i) => {
     if (faceStates[i] !== "idle") return;
@@ -54,7 +49,7 @@ export default function FaceGame({ antall, onLose, onBack, runde }) {
           Trykk på et ansikt
         </h2>
         <p className="mt-1 font-body text-gray-400">
-          Én av dem er sur. Tør du?
+          {players.length ? `${players[(runde - 1) % players.length]} starter. Send videre etter hvert trykk.` : "Én av dem er sur. Tør du?"}
         </p>
       </div>
 

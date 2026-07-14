@@ -1,8 +1,7 @@
 import Button from "../components/Button";
 import { FACE } from "../data/faces";
 
-export default function ResultView({ slurker, onNext, onMenu }) {
-  const isChug = slurker === "Chug";
+export default function ResultView({ penalty, onNext, onMenu }) {
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
@@ -27,7 +26,6 @@ export default function ResultView({ slurker, onNext, onMenu }) {
         Du traff det sinte ansiktet.
       </p>
 
-      {/* Slurk-teller */}
       <div
         className="mb-12 animate-countUp"
         style={{ animationDelay: "0.25s" }}
@@ -37,18 +35,16 @@ export default function ResultView({ slurker, onNext, onMenu }) {
             Straff
           </p>
           <p className="font-display text-5xl font-bold text-gray-900">
-            {slurker}
+            {penalty}
           </p>
-          {!isChug && (
-            <p className="mt-1 font-body text-lg text-gray-500">
-              {slurker === 1 ? "slurk" : "slurker"} 🍺
-            </p>
-          )}
+          <p className="mt-1 font-body text-lg text-gray-500">
+            {penalty === 1 ? "valgfri utfordring" : "valgfrie utfordringer"}
+          </p>
         </div>
       </div>
 
       <div className="w-full max-w-xs space-y-3">
-        <Button onClick={onNext}>Ny runde</Button>
+        <Button onClick={onNext}>Spill igjen</Button>
         <Button variant="ghost" onClick={onMenu}>
           Tilbake til meny
         </Button>

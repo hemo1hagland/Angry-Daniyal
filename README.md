@@ -1,57 +1,82 @@
-# 🎉 Vors — Partyspill
+# Vors Partyspill
 
-> **Trykk på ansiktene. Én av dem blir sur. Ikke vær uheldig.**
+Vors er en mobil-først partyspill-PWA for vennegjenger, studentarrangementer, bursdager og lag. Appen krever ingen konto og lagrer spillerlisten lokalt.
 
-Vors er et sosialt partyspill bygget som en webapp. Perfekt for forspill, fester og vennesammenkomster. Sendes rundt bordet – den som trykker på det sinte ansiktet taper og må utføre en oppgave!
+## Dette finnes nå
 
-## ✨ Funksjoner
+- Fem eksisterende spill er bevart: Ansiktsspillet, Bussruta, Hesteløp, Festgolf og Snurrehjulet.
+- Rask flyt: start, velg spill, legg til navn, spill.
+- Lokal lagring av spillernavn og innstillinger for Ansiktsspillet.
+- QR-kode, kopierbar lenke og systemdeling når mobilen støtter det.
+- Installerbar PWA med manifest, appikoner, stående fullskjerm og offline-cache.
+- Lazy-loading av spill og QR-generator, pluss lettere mobilbilder.
+- Eventpakker, premium-konfigurasjon og personvernvennlig analytics-abstraksjon.
+- Tastaturfokus, semantiske dialoger, redusert bevegelse og iPhone safe areas.
 
-- 🎭 **Ansiktsspill** — Trykk på et av ansiktene i rutenettet. Én er skjult sint!
-- 🍻 **4 moduser** — Klassisk, Sannhet eller Drikk, Pekeleken, Kaos
-- 👥 **Spillerliste** — Legg til alle som er med
-- 📝 **Egne kort** — Lag dine egne oppgaver, lagret lokalt
-- 📱 **Mobiloptimert** — Designet for å sendes rundt bordet
-- 🌙 **Mørkt tema** — Premium dark-mode design med glød-effekter
+## Lokal kjøring
 
-## 🎮 Spillmoduser
-
-| Modus | Beskrivelse |
-|-------|-------------|
-| 🍻 Klassisk | Trygge favoritter for hele bordet |
-| 🤐 Sannhet eller Drikk | Svar ærlig – eller ta en slurk |
-| 👉 Pekeleken | Pek på en – den med flest peker drikker |
-| 💥 Kaos | Helt uforutsigbart. Lykke til. |
-
-## 🛠 Tech Stack
-
-- **React 19** + **Vite 8**
-- **Tailwind CSS 3**
-- **Space Grotesk** font
-- Custom karakter-illustrasjoner
-
-## 🚀 Kom i gang
+Prosjektet bruker Node 22. Node 24 låser dagens Vite-verktøykjede under lokal transformering, så `.nvmrc` og `engines` holder utvikling og Vercel på en testet versjon.
 
 ```bash
-# Installer avhengigheter
-npm install
-
-# Start utviklingsserver
+nvm use
+npm ci
 npm run dev
-
-# Bygg for produksjon
-npm run build
 ```
 
-## 📱 Slik spiller du
+Åpne `http://localhost:5173`. Kvalitetssjekker:
 
-1. Åpne appen på mobilen
-2. Legg til spillere
-3. Velg modus og antall ansikter
-4. Send telefonen rundt — alle trykker på et ansikt
-5. Den som treffer det sinte ansiktet taper og får en oppgave!
+```bash
+npm run lint
+npm run build
+npm run preview
+```
 
-## 📄 Lisens
+## Deploy med Vercel
 
-Copyright (c) 2026 Torbjørn Hagland og Daniyal Chaudhry. Alle rettigheter reservert.
+Repoet er koblet til Vercel. Push en egen branch for å få en Preview Deployment. Produksjonsadressen endres først når branchen merges til `main`, forutsatt at Vercel fortsatt bruker `main` som Production Branch.
 
-Koden, designet, spillkonseptet, tekstene, illustrasjonene og andre filer i dette repoet kan ikke kopieres, endres, distribueres, publiseres eller brukes uten skriftlig tillatelse fra rettighetshaverne.
+Byggekommando: `npm run build`
+
+Output-mappe: `dist`
+
+Anbefalt Node-versjon: `22.x`
+
+## Lage en eventpakke
+
+Åpne `src/data/eventPacks.js`, kopier `student`-pakken og gi den en unik `id`. Der kan du endre navn, introduksjon, logo, temafarger, spillutvalg, kort, sponsor og egen delingsadresse. Start pakken med `?event=din-id`, for eksempel:
+
+```text
+https://angry-daniyal.vercel.app/?event=fadderuke-2026
+```
+
+Logoer legges i `public/events/din-id/` og refereres som `/events/din-id/logo.png`. Kort må ha stabile ID-er og `text`. Typene og et komplett eksempel ligger i samme fil.
+
+## Premium og betaling senere
+
+Produktflagg, pakker og planlagte engangspriser ligger i `src/config/product.js`. `PREMIUM_ENABLED` er `false`; låste pakker kan forhåndsvises, men ingen betaling eller falsk paywall er aktiv.
+
+En fremtidig betalingsadapter bør legges i `src/lib/payments.js` og eksponere noe som `purchasePack(packId)` og `restorePurchases()`. Web kan bruke en engangsbetaling fra en valgt leverandør. En Capacitor-app må bruke StoreKit på iOS og Google Play Billing på Android. Spillkomponentene skal bare spørre et tilgangslag om en pakke er låst, aldri importere betalingsleverandøren direkte.
+
+## Analytics og personvern
+
+Alle events går gjennom `src/lib/analytics.js`. Koble Plausible eller PostHog til `provider.track` senere. Abstraksjonen filtrerer feltnavn som kan inneholde navn, svar eller korttekst. Ikke send spillerlisten, fritekstsvar eller andre personopplysninger.
+
+## Capacitor senere
+
+Webappen unngår backendkrav og har fallbacks for deling, lagring og vibrasjon. Før App Store/Google Play:
+
+1. Legg til Capacitor og generer iOS-/Android-prosjekter fra `dist`.
+2. Generer native ikoner og splash screens fra 1024 px masterikon.
+3. Bytt webdeling til Capacitor Share der det gir bedre resultat.
+4. Implementer engangskjøp med StoreKit og Play Billing.
+5. Lag personvernerklæring og fyll ut platformenes datadeklarasjoner.
+6. Velg aldersmerking ut fra faktisk kortinnhold i den publiserte pakken.
+
+## Bevisste avgrensninger
+
+- Ingen registrering, backend eller sanntidsflerspiller.
+- Ingen ekte betaling eller abonnement.
+- iOS viser ikke en egen installasjonsforklaring ennå; appen kan likevel legges til på hjemskjermen via Del-menyen.
+- Lyd til Hesteløp caches ikke offline og lastes først når spillet trenger den.
+
+Copyright (c) 2026 Torbjørn Hagland og Daniyal Chaudhry. Alle rettigheter reservert. Se `LICENSE`.

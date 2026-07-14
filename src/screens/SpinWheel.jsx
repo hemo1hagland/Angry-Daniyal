@@ -89,8 +89,8 @@ function WheelSvg({ choices, rotation, spinning }) {
   );
 }
 
-export default function SpinWheel({ onBack }) {
-  const [listText, setListText] = useState(DEFAULT_CHOICES.join("\n"));
+export default function SpinWheel({ onBack, players = [], onComplete }) {
+  const [listText, setListText] = useState(() => (players.length ? players : DEFAULT_CHOICES).join("\n"));
   const [newChoice, setNewChoice] = useState("");
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
@@ -131,6 +131,7 @@ export default function SpinWheel({ onBack }) {
     window.setTimeout(() => {
       setWinner(choices[winnerIndex]);
       setSpinning(false);
+      onComplete?.("wheel");
       if (navigator.vibrate) navigator.vibrate([40, 30, 80]);
     }, 4300);
   };
@@ -150,7 +151,7 @@ export default function SpinWheel({ onBack }) {
       </div>
 
       <h1 className="shrink-0 font-display text-5xl font-bold tracking-tighter text-slate-900">
-        Spin wheel
+        Snurrehjulet
       </h1>
       <p className="mx-auto mt-1 max-w-xs shrink-0 font-body text-sm font-semibold text-gray-400">
         Legg inn navn eller valg. Snurr hjulet.
@@ -162,7 +163,7 @@ export default function SpinWheel({ onBack }) {
 
       <div className="mt-4 grid shrink-0 gap-2">
         <Button onClick={spin} disabled={!canSpin} className="py-4">
-          {spinning ? "Spinner..." : "Spinn"}
+          {spinning ? "Spinner..." : winner ? "Spill igjen" : "Spinn"}
         </Button>
         {winner && (
           <div className="rounded-[24px] bg-slate-900 px-5 py-4 text-white shadow-[0_18px_45px_rgba(15,23,42,0.18)]">

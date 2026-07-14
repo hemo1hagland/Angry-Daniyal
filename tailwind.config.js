@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Clash Display"', '"Space Grotesk"', "system-ui", "sans-serif"],
-        body: ['"Space Grotesk"', "system-ui", "sans-serif"],
+        display: ["Inter", "ui-sans-serif", "-apple-system", "BlinkMacSystemFont", '"Segoe UI"', "sans-serif"],
+        body: ["Inter", "ui-sans-serif", "-apple-system", "BlinkMacSystemFont", '"Segoe UI"', "sans-serif"],
       },
       keyframes: {
         shake: {

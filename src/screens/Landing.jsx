@@ -2,11 +2,11 @@ import { useState } from "react";
 import Button from "../components/Button";
 
 const GRID_VALG = [9, 16, 25, 36];
-const SLURK_VALG = [1, 2, 3, 5, "Chug"];
+const PENALTY_OPTIONS = [1, 2, 3, 5, 8];
 
-export default function Landing({ onStart, onBack }) {
-  const [antall, setAntall] = useState(16);
-  const [slurker, setSlurker] = useState(2);
+export default function Landing({ onStart, onBack, initialCount = 16, initialPenalty = 2 }) {
+  const [antall, setAntall] = useState(initialCount);
+  const [penalty, setPenalty] = useState(initialPenalty);
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
@@ -50,36 +50,31 @@ export default function Landing({ onStart, onBack }) {
         </div>
       </div>
 
-      {/* Slurk-vedding */}
       <div className="mb-10 w-full max-w-xs">
         <p className="mb-3 font-body text-sm uppercase tracking-[0.2em] text-gray-400">
-          Slurker 🍺
+          Valgfri straff
         </p>
         <div className="grid grid-cols-5 gap-2">
-          {SLURK_VALG.map((s) => (
+          {PENALTY_OPTIONS.map((option) => (
             <button
-              key={s}
-              onClick={() => setSlurker(s)}
+              key={option}
+              onClick={() => setPenalty(option)}
               className={`rounded-[12px] py-3 font-display text-lg font-bold transition-all duration-200 active:scale-[0.95]
-                ${slurker === s
+                ${penalty === option
                   ? "bg-gray-900 text-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
                   : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}
             >
-              {s}
+              {option}
             </button>
           ))}
         </div>
       </div>
 
       <div className="w-full max-w-xs">
-        <Button onClick={() => onStart(antall, slurker)}>
+        <Button onClick={() => onStart(antall, penalty)}>
           Start spill
         </Button>
       </div>
-
-      <p className="mt-16 max-w-xs font-body text-xs leading-relaxed text-gray-300">
-        Spill utviklet av Torbjørn Hagland og Daniyal Chaudhry. Alle rettigheter reservert.
-      </p>
     </div>
   );
 }
