@@ -2,10 +2,9 @@ import ArrowLeft from "lucide-react/dist/esm/icons/arrow-left.js";
 import Plus from "lucide-react/dist/esm/icons/plus.js";
 import X from "lucide-react/dist/esm/icons/x.js";
 import { useState } from "react";
-import AlcoholFreeToggle from "../components/AlcoholFreeToggle";
 import Button from "../components/Button";
 
-export default function PlayerSetup({ game, players, onPlayersChange, onStart, onBack, alcoholFree, onAlcoholFreeChange }) {
+export default function PlayerSetup({ game, players, onPlayersChange, onStart, onBack }) {
   const [name, setName] = useState("");
   const canStart = players.length >= game.minPlayers;
 
@@ -52,9 +51,6 @@ export default function PlayerSetup({ game, players, onPlayersChange, onStart, o
       </div>
 
       <div className="mt-7 w-full max-w-xs">
-        <AlcoholFreeToggle checked={alcoholFree} onChange={onAlcoholFreeChange} compact />
-      </div>
-      <div className="mt-4 w-full max-w-xs">
         <Button onClick={onStart} disabled={!canStart}>Start {game.name.toLowerCase()}</Button>
         {!canStart && <p className="mt-3 text-xs text-gray-300">Mangler {game.minPlayers - players.length} spiller{game.minPlayers - players.length === 1 ? "" : "e"}</p>}
       </div>

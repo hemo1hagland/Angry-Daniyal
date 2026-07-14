@@ -13,8 +13,9 @@ export default function ShareSheet({ open, onClose, gameId, eventPack }) {
 
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
-    const url = new URL(eventPack.shareUrl || window.location.href);
+    const url = new URL(eventPack.shareUrl || PRODUCT.publicUrl);
     url.search = "";
+    url.searchParams.set("install", "1");
     if (gameId) url.searchParams.set("game", gameId);
     if (eventPack.id !== "default") url.searchParams.set("event", eventPack.id);
     return url.toString();
@@ -65,8 +66,8 @@ export default function ShareSheet({ open, onClose, gameId, eventPack }) {
     if (!navigator.share) return copyLink();
     try {
       await navigator.share({
-        title: `${PRODUCT.name} partyspill`,
-        text: "Bli med på et partyspill",
+        title: `Installer ${PRODUCT.name}`,
+        text: "Åpne Vors og legg appen til på hjem-skjermen",
         url: shareUrl,
       });
       trackEvent("share_button_clicked", { method: "native", gameId: gameId || "app" });
@@ -86,8 +87,8 @@ export default function ShareSheet({ open, onClose, gameId, eventPack }) {
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-gray-300">Samle gjengen</p>
-            <h2 id="share-title" className="mt-1 font-display text-3xl font-bold text-slate-950">Del spillet</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-gray-300">Vors på mobilen</p>
+            <h2 id="share-title" className="mt-1 font-display text-3xl font-bold text-slate-950">Installer appen</h2>
           </div>
           <button className="icon-button" onClick={closeSheet} aria-label="Lukk deling">
             <X size={20} aria-hidden="true" />
@@ -95,10 +96,10 @@ export default function ShareSheet({ open, onClose, gameId, eventPack }) {
         </div>
 
         <div className="mx-auto mt-5 aspect-square w-full max-w-[250px] overflow-hidden rounded-2xl bg-gray-50 p-3">
-          {qrSrc ? <img src={qrSrc} alt="QR-kode til spillet" className="h-full w-full" /> : <div className="h-full w-full animate-pulse rounded-xl bg-slate-100" />}
+          {qrSrc ? <img src={qrSrc} alt="QR-kode for å installere Vors" className="h-full w-full" /> : <div className="h-full w-full animate-pulse rounded-xl bg-slate-100" />}
         </div>
         <p className="mx-auto mt-3 max-w-xs text-center text-sm font-medium leading-snug text-slate-500">
-          Skann koden med mobilkameraet. Ingen konto eller nedlasting kreves.
+          Skann med mobilkameraet for å åpne og installere Vors.
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-2">

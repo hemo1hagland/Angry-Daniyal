@@ -7,6 +7,7 @@ export const PREMIUM_ENABLED = false;
 export const PRODUCT = {
   name: "Vors",
   shortName: "Vors",
+  publicUrl: "https://angry-daniyal.vercel.app/",
   tagline: "Partyspill for hele gjengen",
   responsibleUse:
     "Spill ansvarlig. Alkohol er valgfritt. Aldri press noen til å delta.",
@@ -82,7 +83,7 @@ export const GAMES = [
     accent: "#151515",
     premium: false,
     minPlayers: 3,
-    highlights: ["100 spørsmål", "Ingen oppsett", "Alkoholfri variant"],
+    highlights: ["100 spørsmål", "Ingen oppsett", "Ingen gjentakelser"],
   },
   {
     id: "pubgolf",
@@ -93,7 +94,7 @@ export const GAMES = [
     accent: "#168b68",
     premium: false,
     minPlayers: 2,
-    highlights: ["Lagspill", "Egen rute", "Alkoholfri variant"],
+    highlights: ["Lagspill", "9 utfordringer", "Automatisk oppsett"],
   },
 ];
 
@@ -101,9 +102,9 @@ export const PREMIUM_PACKS = [
   {
     id: "after-dark",
     name: "Etter midnatt",
-    description: "40 ekstra spørsmål og utfordringer med høyere intensitet.",
+    description: "25 drøyere spørsmål om dating, hemmeligheter og pinlige valg.",
     priceNok: 29,
-    preview: ["Hvem kjenner gruppen best?", "Impro på 20 sekunder", "Hemmelig lagoppdrag"],
+    preview: ["Direkte dating-spørsmål", "Pinlige meldinger", "Hemmeligheter i gruppen"],
   },
   {
     id: "event-maker",

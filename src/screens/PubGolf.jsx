@@ -165,7 +165,7 @@ function EndScreen({ teams, scores, onReplay, onBack }) {
   );
 }
 
-export default function PubGolf({ onBack, alcoholFree = false, onComplete }) {
+export default function PubGolf({ onBack, onComplete }) {
   const [phase, setPhase] = useState("setup");
   const [teamCount, setTeamCount] = useState(2);
   const [teams, setTeams] = useState([]);
@@ -252,7 +252,6 @@ export default function PubGolf({ onBack, alcoholFree = false, onComplete }) {
         <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-gray-900">{hole.title}</h2>
         <p className="mx-auto mt-3 max-w-sm text-sm font-semibold leading-relaxed text-gray-600">{hole.task}</p>
         <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-gray-400">{hole.rule}</p>
-        {alcoholFree && <p className="mt-2 text-xs font-bold text-gray-500">Alkoholfri modus: bruk poeng og oppgaven som normalt.</p>}
       </section>
 
       <section className="min-h-0 flex-1 overflow-y-auto" aria-label="Lagscore">

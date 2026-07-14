@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import X from "lucide-react/dist/esm/icons/x.js";
-import { PRODUCT } from "../config/product";
+import Button from "./Button";
 import { trackEvent } from "../lib/analytics";
 
-export default function PremiumPreview({ pack, onClose }) {
+export default function PremiumPreview({ pack, onClose, onStart }) {
   useEffect(() => {
     if (pack) trackEvent("premium_pack_viewed", { packId: pack.id });
   }, [pack]);
@@ -22,9 +22,7 @@ export default function PremiumPreview({ pack, onClose }) {
         <ul className="mt-5 space-y-2">
           {pack.preview.map((item) => <li key={item} className="rounded-xl bg-gray-100 px-4 py-3 text-sm font-bold text-gray-600">{item}</li>)}
         </ul>
-        <div className="mt-5 rounded-xl bg-gray-100 px-4 py-3 text-sm font-medium text-gray-500">
-          Planlagt engangskjøp: ca. {pack.priceNok || PRODUCT.oneTimePriceNok} kr. Ingen abonnement.
-        </div>
+        <Button onClick={() => onStart(pack)} className="mt-5">Åpne pakken</Button>
       </section>
     </div>
   );

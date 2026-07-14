@@ -1,12 +1,12 @@
 # Vors Partyspill
 
-Vors er en mobil-først partyspill-PWA for vennegjenger, studentarrangementer, bursdager og lag. Appen krever ingen konto, lagrer spillerlisten lokalt og har en synlig alkoholfri modus.
+Vors er en mobil-først partyspill-PWA for vennegjenger, studentarrangementer, bursdager og lag. Appen krever ingen konto og lagrer spillerlisten lokalt.
 
 ## Dette finnes nå
 
 - Fem eksisterende spill er bevart: Ansiktsspillet, Bussruta, Hesteløp, Festgolf og Snurrehjulet.
 - Rask flyt: start, velg spill, legg til navn, spill.
-- Lokal lagring av spillernavn, alkoholfri innstilling og innstillinger for Ansiktsspillet.
+- Lokal lagring av spillernavn og innstillinger for Ansiktsspillet.
 - QR-kode, kopierbar lenke og systemdeling når mobilen støtter det.
 - Installerbar PWA med manifest, appikoner, stående fullskjerm og offline-cache.
 - Lazy-loading av spill og QR-generator, pluss lettere mobilbilder.
@@ -49,7 +49,7 @@ Anbefalt Node-versjon: `22.x`
 https://angry-daniyal.vercel.app/?event=fadderuke-2026
 ```
 
-Logoer legges i `public/events/din-id/` og refereres som `/events/din-id/logo.png`. Kort må ha stabile ID-er og kan ha både `text` og `alcoholFreeText`. Typene og et komplett eksempel ligger i samme fil.
+Logoer legges i `public/events/din-id/` og refereres som `/events/din-id/logo.png`. Kort må ha stabile ID-er og `text`. Typene og et komplett eksempel ligger i samme fil.
 
 ## Premium og betaling senere
 

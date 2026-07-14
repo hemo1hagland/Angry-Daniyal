@@ -11,7 +11,7 @@ export default function GameMenu({ onSelect, onBack, onShare, eventPack, onPremi
       <button className="absolute left-5 top-5 flex h-11 items-center gap-1 rounded-full bg-gray-100 px-4 font-body text-sm text-gray-500 transition active:scale-95" onClick={onBack} aria-label="Tilbake til forsiden">
         <ArrowLeft size={17} aria-hidden="true" /> Meny
       </button>
-      <button className="icon-button absolute right-5 top-5 bg-gray-100 text-gray-500" onClick={onShare} aria-label="Del spill">
+      <button className="icon-button absolute right-5 top-5 bg-gray-100 text-gray-500" onClick={onShare} aria-label="Installer appen" title="Installer appen">
         <Share2 size={18} aria-hidden="true" />
       </button>
 
@@ -32,7 +32,7 @@ export default function GameMenu({ onSelect, onBack, onShare, eventPack, onPremi
           {PREMIUM_PACKS.map((pack) => (
             <button key={pack.id} onClick={() => onPremiumPreview(pack)} className="w-full rounded-2xl bg-gray-50 px-5 py-3 text-left transition active:scale-[0.98]">
               <span className="block font-display text-sm font-bold text-gray-500">{pack.name}</span>
-              <span className="mt-0.5 block text-xs text-gray-300">Forhåndsvisning</span>
+              <span className="mt-0.5 block text-xs text-gray-300">Åpne pakken</span>
             </button>
           ))}
         </div>

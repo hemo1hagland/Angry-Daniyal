@@ -12,14 +12,25 @@ const shuffle = (items) => {
   return next;
 };
 
-export default function QuestionGame({ onBack, alcoholFree = false, onComplete }) {
-  const [questions, setQuestions] = useState(() => shuffle(DRINKING_QUESTIONS));
+const questionsForMode = (mode) => DRINKING_QUESTIONS.filter((question) =>
+  mode === "edgy" ? question.intensity === "wild" : question.intensity !== "wild",
+);
+
+export default function QuestionGame({ onBack, onComplete, initialMode = "standard" }) {
+  const [mode, setMode] = useState(initialMode);
+  const [questions, setQuestions] = useState(() => shuffle(questionsForMode(initialMode)));
   const [index, setIndex] = useState(0);
   const question = questions[index];
   const finished = index >= questions.length;
 
   const restart = () => {
-    setQuestions(shuffle(DRINKING_QUESTIONS));
+    setQuestions(shuffle(questionsForMode(mode)));
+    setIndex(0);
+  };
+
+  const changeMode = (nextMode) => {
+    setMode(nextMode);
+    setQuestions(shuffle(questionsForMode(nextMode)));
     setIndex(0);
   };
 
@@ -55,7 +66,12 @@ export default function QuestionGame({ onBack, alcoholFree = false, onComplete }
         <div className="h-full rounded-full bg-gray-900 transition-all" style={{ width: `${((index + 1) / questions.length) * 100}%` }} />
       </div>
 
-      <section className="flex min-h-0 flex-1 flex-col items-center justify-center py-8">
+      <div className="mx-auto mt-4 grid w-full max-w-xs shrink-0 grid-cols-2 rounded-2xl bg-gray-100 p-1" aria-label="Spørsmålsmodus">
+        <button onClick={() => changeMode("standard")} className={`min-h-10 rounded-xl font-display text-sm font-bold transition ${mode === "standard" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400"}`}>Vanlig</button>
+        <button onClick={() => changeMode("edgy")} className={`min-h-10 rounded-xl font-display text-sm font-bold transition ${mode === "edgy" ? "bg-gray-900 text-white" : "text-gray-400"}`}>Drøy</button>
+      </div>
+
+      <section className="flex min-h-0 flex-1 flex-col items-center justify-center py-5">
         <p className="rounded-full bg-gray-100 px-4 py-2 font-body text-xs font-bold uppercase text-gray-400">{question.category}</p>
         <h1 className="mt-7 max-w-sm font-display text-4xl font-bold leading-tight text-gray-900">{question.text}</h1>
         <p className="mt-7 max-w-xs font-body text-base leading-relaxed text-gray-400">Pek samtidig på den som passer best.</p>
@@ -63,7 +79,7 @@ export default function QuestionGame({ onBack, alcoholFree = false, onComplete }
 
       <div className="mx-auto w-full max-w-xs shrink-0">
         <p className="mb-4 rounded-2xl bg-gray-100 px-4 py-3 font-body text-sm font-semibold text-gray-500">
-          {alcoholFree ? "Flest pek gir 1 poeng." : "Flest pek kan ta 1 valgfri slurk."}
+          Flest pek kan ta 1 valgfri slurk.
         </p>
         <Button onClick={next}>Neste spørsmål</Button>
       </div>

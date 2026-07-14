@@ -1,7 +1,7 @@
 import Button from "../components/Button";
 import { FACE } from "../data/faces";
 
-export default function ResultView({ penalty, alcoholFree, onNext, onMenu }) {
+export default function ResultView({ penalty, onNext, onMenu }) {
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6 py-12 text-center">
@@ -38,7 +38,7 @@ export default function ResultView({ penalty, alcoholFree, onNext, onMenu }) {
             {penalty}
           </p>
           <p className="mt-1 font-body text-lg text-gray-500">
-            {alcoholFree ? "poengtrekk" : penalty === 1 ? "valgfri utfordring" : "valgfrie utfordringer"}
+            {penalty === 1 ? "valgfri utfordring" : "valgfrie utfordringer"}
           </p>
         </div>
       </div>

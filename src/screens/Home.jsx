@@ -1,11 +1,10 @@
 import Download from "lucide-react/dist/esm/icons/download.js";
 import Share2 from "lucide-react/dist/esm/icons/share-2.js";
 import { useEffect, useState } from "react";
-import AlcoholFreeToggle from "../components/AlcoholFreeToggle";
 import Button from "../components/Button";
 import { PRODUCT } from "../config/product";
 
-export default function Home({ onStart, onShare, alcoholFree, onAlcoholFreeChange, eventPack }) {
+export default function Home({ onStart, onShare, eventPack }) {
   const [installPrompt, setInstallPrompt] = useState(null);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function Home({ onStart, onShare, alcoholFree, onAlcoholFreeChang
             <Download size={18} aria-hidden="true" />
           </button>
         )}
-        <button className="icon-button bg-gray-100 text-gray-500" onClick={onShare} aria-label="Del spillet" title="Del spillet">
+        <button className="icon-button bg-gray-100 text-gray-500" onClick={onShare} aria-label="Installer appen" title="Installer appen">
           <Share2 size={18} aria-hidden="true" />
         </button>
       </div>
@@ -43,9 +42,6 @@ export default function Home({ onStart, onShare, alcoholFree, onAlcoholFreeChang
 
       <div className="w-full max-w-xs">
         <Button onClick={onStart}>Start spill</Button>
-        <div className="mt-4">
-          <AlcoholFreeToggle checked={alcoholFree} onChange={onAlcoholFreeChange} />
-        </div>
       </div>
 
       <p className="mt-14 max-w-xs font-body text-xs leading-relaxed text-gray-300">

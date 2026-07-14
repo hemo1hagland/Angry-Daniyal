@@ -4,7 +4,7 @@ import Button from "../components/Button";
 const GRID_VALG = [9, 16, 25, 36];
 const PENALTY_OPTIONS = [1, 2, 3, 5, 8];
 
-export default function Landing({ onStart, onBack, initialCount = 16, initialPenalty = 2, alcoholFree = false }) {
+export default function Landing({ onStart, onBack, initialCount = 16, initialPenalty = 2 }) {
   const [antall, setAntall] = useState(initialCount);
   const [penalty, setPenalty] = useState(initialPenalty);
 
@@ -52,7 +52,7 @@ export default function Landing({ onStart, onBack, initialCount = 16, initialPen
 
       <div className="mb-10 w-full max-w-xs">
         <p className="mb-3 font-body text-sm uppercase tracking-[0.2em] text-gray-400">
-          {alcoholFree ? "Straffepoeng" : "Valgfri straff"}
+          Valgfri straff
         </p>
         <div className="grid grid-cols-5 gap-2">
           {PENALTY_OPTIONS.map((option) => (

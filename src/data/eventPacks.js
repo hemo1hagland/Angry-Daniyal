@@ -5,7 +5,6 @@
  * @property {string} category
  * @property {"mild"|"medium"|"wild"} [intensity]
  * @property {boolean} [premium]
- * @property {string} [alcoholFreeText]
  * @property {number} [minPlayers]
  * @property {number} [maxPlayers]
  * @property {"player"|"group"} [target]
@@ -50,7 +49,6 @@ export const EVENT_PACKS = [
       {
         id: "default-point-001",
         text: "Gi ut to slurker til en valgfri spiller.",
-        alcoholFreeText: "Gi en valgfri spiller to bonuspoeng.",
         category: "points",
         intensity: "mild",
         target: "player",
@@ -94,8 +92,4 @@ export function getActiveEventPack() {
   if (typeof window === "undefined") return EVENT_PACKS[0];
   const requestedId = new URLSearchParams(window.location.search).get("event");
   return EVENT_PACKS.find((pack) => pack.id === requestedId) || EVENT_PACKS[0];
-}
-
-export function resolveCardText(card, alcoholFree) {
-  return alcoholFree && card.alcoholFreeText ? card.alcoholFreeText : card.text;
 }
