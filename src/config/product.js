@@ -22,6 +22,7 @@ export const PRODUCT = {
  * @property {string} accent
  * @property {boolean} premium
  * @property {number} minPlayers
+ * @property {number} [maxPlayers]
  * @property {string[]} highlights
  */
 
@@ -103,6 +104,18 @@ export const GAMES = [
     premium: false,
     minPlayers: 2,
     highlights: ["8 land", "17 spill", "Automatiske straffer"],
+  },
+  {
+    id: "vorsbyen",
+    name: "Vorsbyen",
+    description: "Kjøp norske utesteder, bygg hus og vinn to komplette nabolag.",
+    category: "choice",
+    icon: "city",
+    accent: "#151515",
+    premium: false,
+    minPlayers: 2,
+    maxPlayers: 6,
+    highlights: ["2-6 spillere", "Norske utesteder", "Bonuskort og challenges"],
   },
 ];
 

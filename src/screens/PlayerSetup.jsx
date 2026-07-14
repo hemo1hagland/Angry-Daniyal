@@ -6,12 +6,13 @@ import Button from "../components/Button";
 
 export default function PlayerSetup({ game, players, onPlayersChange, onStart, onBack }) {
   const [name, setName] = useState("");
-  const canStart = players.length >= game.minPlayers;
+  const maxPlayers = game.maxPlayers || 20;
+  const canStart = players.length >= game.minPlayers && players.length <= maxPlayers;
 
   const addPlayer = () => {
     const cleanName = name.trim();
     if (!cleanName || players.some((player) => player.toLowerCase() === cleanName.toLowerCase())) return;
-    onPlayersChange([...players, cleanName].slice(0, 20));
+    onPlayersChange([...players, cleanName].slice(0, maxPlayers));
     setName("");
   };
 
@@ -30,7 +31,7 @@ export default function PlayerSetup({ game, players, onPlayersChange, onStart, o
           <span className="sr-only">Spillernavn</span>
           <input value={name} onChange={(event) => setName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && addPlayer()} placeholder="Legg til navn" autoComplete="off" className="h-14 w-full rounded-2xl bg-gray-100 px-4 font-display text-base font-bold text-gray-800 outline-none placeholder:font-body placeholder:font-normal placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900" />
         </label>
-        <button className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gray-900 text-white transition active:scale-95" onClick={addPlayer} aria-label="Legg til spiller">
+        <button className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gray-900 text-white transition active:scale-95 disabled:opacity-40" onClick={addPlayer} disabled={players.length >= maxPlayers} aria-label="Legg til spiller">
           <Plus size={23} aria-hidden="true" />
         </button>
       </div>
@@ -52,7 +53,8 @@ export default function PlayerSetup({ game, players, onPlayersChange, onStart, o
 
       <div className="mt-7 w-full max-w-xs">
         <Button onClick={onStart} disabled={!canStart}>Start {game.name.toLowerCase()}</Button>
-        {!canStart && <p className="mt-3 text-xs text-gray-300">Mangler {game.minPlayers - players.length} spiller{game.minPlayers - players.length === 1 ? "" : "e"}</p>}
+        {!canStart && players.length < game.minPlayers && <p className="mt-3 text-xs text-gray-300">Mangler {game.minPlayers - players.length} spiller{game.minPlayers - players.length === 1 ? "" : "e"}</p>}
+        {players.length > maxPlayers && <p className="mt-3 text-xs text-gray-300">Maks {maxPlayers} spillere i {game.name}</p>}
       </div>
     </main>
   );

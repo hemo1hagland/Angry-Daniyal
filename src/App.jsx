@@ -13,7 +13,6 @@ import { trackEvent } from "./lib/analytics";
 const Landing = lazy(() => import("./screens/Landing"));
 const FaceGame = lazy(() => import("./screens/FaceGame"));
 const ResultView = lazy(() => import("./screens/ResultView"));
-const FaceBonus = lazy(() => import("./screens/FaceBonus"));
 const HorseRace = lazy(() => import("./screens/HorseRace"));
 const PubGolf = lazy(() => import("./screens/PubGolf"));
 const SpinWheel = lazy(() => import("./screens/SpinWheel"));
@@ -21,6 +20,7 @@ const BusRoute = lazy(() => import("./screens/BusRoute"));
 const QuestionGame = lazy(() => import("./screens/QuestionGame"));
 const CustomCards = lazy(() => import("./screens/CustomCards"));
 const WorldGames = lazy(() => import("./screens/WorldGames"));
+const Vorsbyen = lazy(() => import("./screens/Vorsbyen"));
 
 const DIRECT_START_GAMES = new Set(["questions", "pubgolf", "world"]);
 
@@ -118,9 +118,8 @@ export default function App() {
         {screen === "games" && <GameMenu onSelect={selectGame} onBack={goHome} onShare={() => setShareOpen(true)} eventPack={eventPack} onPremiumPreview={setPremiumPack} />}
         {screen === "setup" && selectedGame && <PlayerSetup game={selectedGame} players={players} onPlayersChange={setPlayers} onStart={launchGame} onBack={() => setScreen("games")} />}
         {screen === "face-settings" && <Landing initialCount={antall} initialPenalty={penalty} onStart={startFaceGame} onBack={() => setScreen("games")} />}
-        {screen === "face-game" && <FaceGame antall={antall} runde={runde} onLose={() => { completeGame("face"); setScreen("face-result"); }} onBonus={() => setScreen("face-bonus")} onBack={() => setScreen("face-settings")} />}
+        {screen === "face-game" && <FaceGame antall={antall} runde={runde} onLose={() => { completeGame("face"); setScreen("face-result"); }} onBack={() => setScreen("face-settings")} />}
         {screen === "face-result" && <ResultView penalty={penalty} onNext={playFaceAgain} onMenu={() => setScreen("games")} />}
-        {screen === "face-bonus" && <FaceBonus onNext={playFaceAgain} onMenu={() => setScreen("games")} />}
         {screen === "horse" && <HorseRace {...gameProps} />}
         {screen === "pubgolf" && <PubGolf {...gameProps} />}
         {screen === "wheel" && <SpinWheel {...gameProps} />}
@@ -128,6 +127,7 @@ export default function App() {
         {screen === "questions" && <QuestionGame key={questionMode} {...gameProps} initialMode={questionMode} />}
         {screen === "custom-cards" && <CustomCards {...gameProps} />}
         {screen === "world" && <WorldGames {...gameProps} />}
+        {screen === "vorsbyen" && <Vorsbyen {...gameProps} />}
       </Suspense>
 
       <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} gameId={selectedGameId} eventPack={eventPack} />
