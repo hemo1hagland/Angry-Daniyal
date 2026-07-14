@@ -36,7 +36,7 @@ export const EVENT_PACKS = [
       secondary: "#ef5b45",
       surface: "#f5f3ef",
     },
-    games: ["face", "questions", "wheel", "busroute", "horse", "pubgolf"],
+    games: ["face", "questions", "world", "wheel", "busroute", "horse", "pubgolf"],
     cards: [
       {
         id: "default-impression-001",
@@ -74,7 +74,7 @@ export const EVENT_PACKS = [
       secondary: "#f2b84b",
       surface: "#f3f5ef",
     },
-    games: ["face", "questions", "wheel", "busroute"],
+    games: ["face", "questions", "world", "wheel", "busroute"],
     cards: [
       {
         id: "student-intro-001",

@@ -19,8 +19,9 @@ const SpinWheel = lazy(() => import("./screens/SpinWheel"));
 const BusRoute = lazy(() => import("./screens/BusRoute"));
 const QuestionGame = lazy(() => import("./screens/QuestionGame"));
 const CustomCards = lazy(() => import("./screens/CustomCards"));
+const WorldGames = lazy(() => import("./screens/WorldGames"));
 
-const DIRECT_START_GAMES = new Set(["questions", "pubgolf"]);
+const DIRECT_START_GAMES = new Set(["questions", "pubgolf", "world"]);
 
 const getDeepLinkedGame = () => {
   const id = new URLSearchParams(window.location.search).get("game");
@@ -119,6 +120,7 @@ export default function App() {
         {screen === "busroute" && <BusRoute {...gameProps} />}
         {screen === "questions" && <QuestionGame key={questionMode} {...gameProps} initialMode={questionMode} />}
         {screen === "custom-cards" && <CustomCards {...gameProps} />}
+        {screen === "world" && <WorldGames {...gameProps} />}
       </Suspense>
 
       <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} gameId={selectedGameId} eventPack={eventPack} />

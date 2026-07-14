@@ -96,6 +96,17 @@ export const GAMES = [
     minPlayers: 2,
     highlights: ["3-9 hull", "20 utfordringer", "Bygg egen bane"],
   },
+  {
+    id: "world",
+    name: "Verdensleker",
+    description: "Velg land og prøv kjente drikkeleker fra andre deler av verden.",
+    category: "choice",
+    icon: "globe",
+    accent: "#151515",
+    premium: false,
+    minPlayers: 2,
+    highlights: ["4 land", "9 spill", "Full regelguide"],
+  },
 ];
 
 export const PREMIUM_PACKS = [
