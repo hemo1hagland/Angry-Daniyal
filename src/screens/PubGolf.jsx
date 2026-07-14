@@ -16,35 +16,35 @@ const DEFAULT_BARS = [
 const DEFAULT_HOLE_COUNT = 9;
 
 const OPENING_HOLE = {
-  title: "Åpningshullet",
+  title: "Fellesstart",
   par: 1,
-  drink: "Chug",
-  task: "Alle starter med chug. Dette hullet er låst.",
-  rule: "Chug = 1 slag.",
+  drink: "Valgfri aktivitet",
+  task: "Alle velger en liten drikke, bevegelse eller miniutfordring. Dette hullet er låst.",
+  rule: "Fullført = 1 slag.",
   locked: true,
 };
 
 const CHALLENGES = [
   {
-    title: "Split the G",
+    title: "Presisjon",
     par: 2,
-    drink: "Guinness",
-    task: "Prøv å lande første slurk midt i G-en. Treffer laget, skriv par.",
+    drink: "Mynt eller papirball",
+    task: "Skyv en mynt mot en strek på bordet. Nærmest streken skriver par.",
     rule: "Bom gir +1.",
   },
   {
     title: "Wrong hand",
     par: 3,
     drink: "Valgfri",
-    task: "Hele laget drikker med feil hånd på dette hullet.",
+    task: "Hele laget bruker feil hånd til neste aktivitet.",
     rule: "Glemmer noen det, legg på +1.",
   },
   {
     title: "Caddie choice",
     par: 4,
     drink: "Lagkameratens valg",
-    task: "En på laget velger drikke for en annen.",
-    rule: "Nekt gir +1.",
+    task: "En på laget velger en morsom miniutfordring for en annen.",
+    rule: "Det er alltid lov å velge en ny utfordring.",
   },
   {
     title: "Golf-kommentator",
@@ -57,7 +57,7 @@ const CHALLENGES = [
     title: "Team chant",
     par: 3,
     drink: "Valgfri",
-    task: "Lag et kort lagrop før første slurk.",
+    task: "Lag et kort lagrop før dere går videre.",
     rule: "Ingen lagrop gir +1.",
   },
   {
@@ -77,7 +77,7 @@ const CHALLENGES = [
   {
     title: "Trivia tee",
     par: 2,
-    drink: "Liten drikke",
+    drink: "Quiz",
     task: "Motstanderlaget stiller ett lett quizspørsmål.",
     rule: "Feil svar gir +1.",
   },
@@ -89,11 +89,11 @@ const CHALLENGES = [
     rule: "Manglende kostyme gir +1.",
   },
   {
-    title: "Strawpedo",
+    title: "Papirputt",
     par: 2,
-    drink: "Flaskeøl eller cider",
-    task: "Fullfør med sugerør-trikset.",
-    rule: "Mislykket forsøk gir +1.",
+    drink: "Papirball og glass",
+    task: "Få en papirball i et tomt glass fra én meters avstand.",
+    rule: "Tre bom gir +1.",
   },
   {
     title: "Phone ban",
@@ -112,7 +112,7 @@ const CHALLENGES = [
   {
     title: "Final putt",
     par: 2,
-    drink: "Siste lille drikke",
+    drink: "Siste oppgave",
     task: "Alle gjetter hvem som leder før leaderboard åpnes.",
     rule: "Feil laggjetting gir +1.",
   },
@@ -127,18 +127,47 @@ const CHALLENGES = [
     title: "Captain's order",
     par: 4,
     drink: "Kapteinens valg",
-    task: "Kapteinen bestemmer rekkefølgen laget drikker i.",
-    rule: "Feil rekkefølge gir +1.",
+    task: "Kapteinen bestemmer rekkefølgen på lagets miniutfordringer.",
+    rule: "Brutt rekkefølge gir +1.",
   },
 ];
+
+const ALCOHOL_FREE_TASKS = {
+  Fellesstart: "Alle gjør en kort oppvarmingsutfordring valgt av laget.",
+  Presisjon: "Skyv en mynt mot en strek på bordet. Nærmest streken skriver par.",
+  "Wrong hand": "Alle bruker feil hånd til neste enkle oppgave.",
+  "Caddie choice": "En lagkamerat velger en morsom miniutfordring for en annen.",
+  "Golf-kommentator": "Forklar lagets score med golfkommentator-stemme.",
+  "Team chant": "Lag og fremfør et kort lagrop.",
+  "Photo finish": "Ta et dramatisk lagbilde før dere går videre.",
+  Mulligan: "Dårligste lag kan trekke fra 1 hvis alle fullfører en gruppeutfordring.",
+  "Trivia tee": "Motstanderlaget stiller ett lett quizspørsmål.",
+  "Dress code": "Alle improviserer et golfantrekk eller en golfpositur.",
+  Papirputt: "Lag en papirball og få den i et glass fra én meters avstand.",
+  "Phone ban": "Ingen på laget bruker mobilen før neste hull.",
+  "Caddy walk": "Gå samlet inn som et seriøst golfteam.",
+  "Final putt": "Alle gjetter hvem som leder før resultatlisten åpnes.",
+  "Par save": "Laget må treffe nøyaktig par på dette hullet.",
+  "Captain's order": "Kapteinen bestemmer rekkefølgen på lagets miniutfordringer.",
+};
+
+const getPlayableChallenge = (challenge, alcoholFree) => {
+  if (!challenge || !alcoholFree) return challenge;
+  return {
+    ...challenge,
+    drink: "Poeng og oppgave",
+    task: ALCOHOL_FREE_TASKS[challenge.title] || "Fullfør en morsom utfordring valgt av gruppen.",
+    rule: challenge.locked ? "Fullført oppgave = 1 slag." : challenge.rule,
+  };
+};
 
 const getScoreActions = (hole) => {
   if (hole.locked) {
     return [
-      { label: "Chug", detail: "Fullført", value: 1 },
+      { label: "Fullført", detail: "Klar", value: 1 },
       { label: "Treg", detail: "Nesten", value: 2 },
       { label: "Ikke ferdig", detail: "Straff", value: 3 },
-      { label: "Søl +1", detail: "Legg på", delta: 1 },
+      { label: "Ekstra +1", detail: "Legg på", delta: 1 },
     ];
   }
 
@@ -298,7 +327,7 @@ function ChallengeInfoModal({ hole, onClose }) {
             <p className="font-display text-2xl font-bold text-slate-900">{hole.par}</p>
           </div>
           <div className="rounded-2xl bg-gray-50 px-4 py-3 ring-1 ring-gray-200">
-            <p className="font-body text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Drikke</p>
+            <p className="font-body text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Aktivitet</p>
             <p className="truncate font-display text-lg font-bold text-slate-900">{hole.drink}</p>
           </div>
         </div>
@@ -412,7 +441,7 @@ function LiveScoreButton({ teams, scores, onClick }) {
   );
 }
 
-function ChallengePicker({ hole, holeNumber, onChoose, onClose }) {
+function ChallengePicker({ hole, holeNumber, onChoose, onClose, alcoholFree }) {
   return (
     <div className="absolute inset-0 z-40 flex items-end bg-slate-950/35 px-3 pb-3 backdrop-blur-sm">
       <div className="flex max-h-[80vh] w-full flex-col overflow-hidden rounded-[30px] bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.22)]">
@@ -436,6 +465,7 @@ function ChallengePicker({ hole, holeNumber, onChoose, onClose }) {
         <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
           {CHALLENGES.map((challenge) => {
             const selected = challenge.title === hole.title;
+            const playableChallenge = getPlayableChallenge(challenge, alcoholFree);
             return (
               <button
                 key={challenge.title}
@@ -449,7 +479,7 @@ function ChallengePicker({ hole, holeNumber, onChoose, onClose }) {
                 <div className="min-w-0">
                   <p className="truncate font-display text-lg font-bold leading-tight">{challenge.title}</p>
                   <p className={`mt-0.5 truncate font-body text-xs font-bold ${selected ? "text-white/55" : "text-gray-400"}`}>
-                    Par {challenge.par} · {challenge.drink}
+                    Par {challenge.par} · {playableChallenge.drink}
                   </p>
                 </div>
                 <span className={`shrink-0 rounded-full px-3 py-1.5 font-body text-[10px] font-bold uppercase tracking-[0.12em] ${
@@ -527,10 +557,10 @@ function EndScreen({ teams, scores, onEdit, onReplay, onHome }) {
   );
 }
 
-export default function PubGolf({ onBack }) {
+export default function PubGolf({ onBack, players: savedPlayers = [], alcoholFree = false, onComplete }) {
   const [phase, setPhase] = useState("teams");
   const [playerName, setPlayerName] = useState("");
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState(() => savedPlayers);
   const [teamCount, setTeamCount] = useState(2);
   const [teams, setTeams] = useState([]);
   const [barNames, setBarNames] = useState(() => normalizeBars(DEFAULT_HOLE_COUNT));
@@ -543,7 +573,7 @@ export default function PubGolf({ onBack }) {
   const [finishArmed, setFinishArmed] = useState(false);
 
   const canMakeTeams = players.length >= 2;
-  const current = holes[currentHole];
+  const current = getPlayableChallenge(holes[currentHole], alcoholFree);
   const currentScores = scores;
 
   const rankedTeams = useMemo(
@@ -616,21 +646,6 @@ export default function PubGolf({ onBack }) {
     });
   };
 
-  const swapHole = (holeIndex) => {
-    if (holeIndex === 0) return;
-    setHoles((currentHoles) => {
-      const used = new Set(currentHoles.map((hole) => hole.title));
-      const options = CHALLENGES.filter((challenge) => !used.has(challenge.title));
-      const challenge = shuffle(options.length ? options : CHALLENGES)[0];
-
-      return currentHoles.map((hole, index) =>
-        index === holeIndex
-          ? { ...challenge, locked: false, id: makeId(), bar: hole.bar }
-          : hole,
-      );
-    });
-  };
-
   const chooseChallenge = (holeIndex, challenge) => {
     if (holeIndex === 0) return;
     setHoles((currentHoles) =>
@@ -673,7 +688,7 @@ export default function PubGolf({ onBack }) {
   const replay = () => {
     setPhase("teams");
     setPlayerName("");
-    setPlayers([]);
+    setPlayers(savedPlayers);
     setTeams([]);
     setHoles([]);
     setScores({});
@@ -892,7 +907,7 @@ export default function PubGolf({ onBack }) {
                       Challenge
                     </p>
                     <p className="truncate font-display text-lg font-bold">
-                      {index === 0 ? "Åpningshullet · Chug" : hole.title}
+                      {index === 0 ? "Fellesstart · valgfri aktivitet" : hole.title}
                     </p>
                   </button>
                   <button
@@ -931,6 +946,7 @@ export default function PubGolf({ onBack }) {
           <ChallengePicker
             hole={holes[challengePicker]}
             holeNumber={challengePicker + 1}
+            alcoholFree={alcoholFree}
             onChoose={(challenge) => chooseChallenge(challengePicker, challenge)}
             onClose={() => setChallengePicker(null)}
           />
@@ -938,7 +954,7 @@ export default function PubGolf({ onBack }) {
 
         {showChallengeInfo && (
           <ChallengeInfoModal
-            hole={showChallengeInfo === true ? holes[0] : showChallengeInfo}
+            hole={getPlayableChallenge(showChallengeInfo === true ? holes[0] : showChallengeInfo, alcoholFree)}
             onClose={() => setShowChallengeInfo(false)}
           />
         )}
@@ -1063,6 +1079,7 @@ export default function PubGolf({ onBack }) {
               if (finishArmed) {
                 setFinishArmed(false);
                 setPhase("end");
+                onComplete?.("pubgolf");
               } else {
                 setFinishArmed(true);
               }

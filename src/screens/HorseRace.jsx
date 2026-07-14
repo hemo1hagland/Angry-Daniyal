@@ -93,6 +93,14 @@ const shuffle = (cards) => {
 const initialPositions = () =>
   SUITS.reduce((positions, suit) => ({ ...positions, [suit.id]: 0 }), {});
 
+const createDefaultPlayers = (names) =>
+  names.map((name, index) => ({
+    id: `saved-${index}-${name}`,
+    name,
+    suit: SUITS[index % SUITS.length].id,
+    bet: 2,
+  }));
+
 const getRaceResults = (winner, players) => {
   const winners = players.filter((player) => player.suit === winner.id);
   const losers = players.filter((player) => player.suit !== winner.id);
@@ -384,7 +392,7 @@ function SuitButton({ suit, selected, onClick }) {
   );
 }
 
-function PlayerRow({ player, onRemove }) {
+function PlayerRow({ player, onRemove, alcoholFree }) {
   const suit = suitById(player.suit);
 
   return (
@@ -392,7 +400,7 @@ function PlayerRow({ player, onRemove }) {
       <div className="min-w-0">
         <p className="truncate font-display text-base font-bold text-slate-900">{player.name}</p>
         <p className="font-body text-sm text-gray-500">
-          Satser {player.bet} slurker på{" "}
+          Satser {player.bet} {alcoholFree ? "poeng" : "valgfri straff"} på{" "}
           <span className="font-bold" style={{ color: suit.color }}>
             {suit.symbol} {suit.name}
           </span>
@@ -431,7 +439,7 @@ function ConfettiBurst() {
   );
 }
 
-function ResultPanel({ winner, players }) {
+function ResultPanel({ winner, players, alcoholFree }) {
   const { rows, totalToHandOut, totalDrinks } = getRaceResults(winner, players);
 
   return (
@@ -442,7 +450,7 @@ function ResultPanel({ winner, players }) {
           <p className="font-display text-2xl font-bold text-slate-900">{totalToHandOut}</p>
         </div>
         <div className="rounded-2xl bg-gray-50 p-3 text-center">
-          <p className="font-body text-xs text-gray-400">Drikkes nå</p>
+          <p className="font-body text-xs text-gray-400">{alcoholFree ? "Trekkes nå" : "Straffer nå"}</p>
           <p className="font-display text-2xl font-bold text-slate-900">{totalDrinks}</p>
         </div>
       </div>
@@ -473,7 +481,7 @@ function ResultPanel({ winner, players }) {
                   </>
                 ) : (
                   <>
-                    <p className="font-body text-xs text-gray-400">Drikker</p>
+                    <p className="font-body text-xs text-gray-400">{alcoholFree ? "Poengtrekk" : "Valgfri straff"}</p>
                     <p className="font-display text-2xl font-bold">{row.drinks}</p>
                   </>
                 )}
@@ -491,7 +499,7 @@ function ResultPanel({ winner, players }) {
   );
 }
 
-function WinnerOverlay({ winner, players, onReplay, onReset }) {
+function WinnerOverlay({ winner, players, onReplay, onReset, alcoholFree }) {
   const { winners, totalToHandOut, totalDrinks } = getRaceResults(winner, players);
 
   return (
@@ -521,13 +529,13 @@ function WinnerOverlay({ winner, players, onReplay, onReset }) {
             <p className="font-display text-3xl font-bold">{totalToHandOut}</p>
           </div>
           <div className="rounded-2xl bg-gray-100 p-3 text-slate-900">
-            <p className="font-body text-xs text-gray-500">Tapere drikker</p>
+            <p className="font-body text-xs text-gray-500">{alcoholFree ? "Poengtrekk" : "Tapernes straff"}</p>
             <p className="font-display text-3xl font-bold">{totalDrinks}</p>
           </div>
         </div>
 
         <div className="mt-4 min-h-0 overflow-y-auto pr-1">
-          <ResultPanel winner={winner} players={players} />
+          <ResultPanel winner={winner} players={players} alcoholFree={alcoholFree} />
         </div>
 
         <div className="mt-4 grid shrink-0 grid-cols-2 gap-2">
@@ -543,14 +551,14 @@ function WinnerOverlay({ winner, players, onReplay, onReset }) {
   );
 }
 
-export default function HorseRace({ onBack }) {
+export default function HorseRace({ onBack, players: savedPlayers = [], alcoholFree = false, onComplete }) {
   const audioRef = useRef(null);
   const [{ drawDeck, stageCards }, setRaceCards] = useState(() => newRaceDeck());
   const [phase, setPhase] = useState("bet");
   const [selectedSuit, setSelectedSuit] = useState("spades");
   const [bet, setBet] = useState(2);
   const [playerName, setPlayerName] = useState("");
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState(() => createDefaultPlayers(savedPlayers));
   const [positions, setPositions] = useState(initialPositions);
   const [lastCard, setLastCard] = useState(null);
   const [movingSuit, setMovingSuit] = useState(null);
@@ -642,6 +650,7 @@ export default function HorseRace({ onBack }) {
     if (finishedSuit) {
       setWinner(finishedSuit);
       setAutoPlay(false);
+      onComplete?.("horse");
       window.setTimeout(() => vibrate([90, 50, 160]), 250);
     }
 
@@ -654,8 +663,8 @@ export default function HorseRace({ onBack }) {
   useEffect(() => {
     const audio = new Audio(RACE_MUSIC_SRC);
     audio.loop = true;
-    audio.preload = "auto";
-    audio.volume = volume;
+    audio.preload = "metadata";
+    audio.volume = 0.45;
     audioRef.current = audio;
 
     return () => {
@@ -672,6 +681,8 @@ export default function HorseRace({ onBack }) {
     }, Math.round(1250 / autoSpeed));
 
     return () => window.clearTimeout(timer);
+  // drawCard intentionally closes over the current deck and positions.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoPlay, autoSpeed, drawDeck, movingSuit, phase, positions, stageCards, winner]);
 
   useEffect(() => {
@@ -741,7 +752,7 @@ export default function HorseRace({ onBack }) {
 
             <div>
               <p className="mb-1.5 font-body text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
-                Slurker
+                {alcoholFree ? "Poeng" : "Valgfri straff"}
               </p>
               <div className="grid grid-cols-5 gap-2">
                 {BETS.map((option) => (
@@ -778,11 +789,11 @@ export default function HorseRace({ onBack }) {
               <p className="font-body text-sm font-bold uppercase tracking-[0.18em] text-gray-400">
                 Satser
               </p>
-              <p className="font-body text-sm font-bold text-gray-500">{totalPot} slurker i potten</p>
+              <p className="font-body text-sm font-bold text-gray-500">{totalPot} {alcoholFree ? "poeng" : "i potten"}</p>
             </div>
             <div className="space-y-2">
               {players.map((player) => (
-                <PlayerRow key={player.id} player={player} onRemove={() => removePlayer(player.id)} />
+                <PlayerRow key={player.id} player={player} alcoholFree={alcoholFree} onRemove={() => removePlayer(player.id)} />
               ))}
             </div>
           </div>
@@ -905,6 +916,7 @@ export default function HorseRace({ onBack }) {
         <WinnerOverlay
           winner={winner}
           players={players}
+          alcoholFree={alcoholFree}
           onReplay={prepareRace}
           onReset={reset}
         />

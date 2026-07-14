@@ -129,7 +129,7 @@ function PlayingCard({ card, onClick, dealIndex, dealing, disabled }) {
   );
 }
 
-export default function BusRoute({ onBack }) {
+export default function BusRoute({ onBack, players = [], alcoholFree = false, onComplete }) {
   const [game, setGame] = useState(() => createGame());
   const [lastCard, setLastCard] = useState(null);
   const [activeRowIndex, setActiveRowIndex] = useState(ROW_COUNT - 1);
@@ -194,12 +194,14 @@ export default function BusRoute({ onBack }) {
     if (failed) {
       if (navigator.vibrate) navigator.vibrate([50, 35, 90]);
       setOutcome("lost");
+      onComplete?.("busroute");
       return;
     }
 
     if (navigator.vibrate) navigator.vibrate(25);
     if (activeRowIndex === 0) {
       setOutcome("won");
+      onComplete?.("busroute");
     } else {
       setActiveRowIndex((index) => index - 1);
     }
@@ -211,13 +213,14 @@ export default function BusRoute({ onBack }) {
   const resultTitle = outcome === "lost" ? "You lost" : outcome === "won" ? "Du vant!" : "";
   const resultText =
     outcome === "lost"
-      ? `${lastCard?.rank ?? ""}${lastCard?.symbol ?? ""} er bildekort. Drikk ${
-          lastCard?.rowSips ?? ""
-        } slurker.`
+      ? `${lastCard?.rank ?? ""}${lastCard?.symbol ?? ""} er bildekort. ${
+          alcoholFree ? `Trekk ${lastCard?.rowSips ?? ""} poeng eller gjør en gruppevalgt utfordring.` : `Ta ${lastCard?.rowSips ?? ""} rolige slurker, eller velg en utfordring.`
+        }`
       : outcome === "won"
         ? "Du kom til toppen uten bildekort."
         : "";
-  const helperText = dealing ? "Legger ut kort..." : !outcome ? `Velg ett kort på ${activeRow?.sips ?? 0} sl.` : "";
+  const currentPlayer = players.length ? players[(ROW_COUNT - 1 - activeRowIndex) % players.length] : "Neste spiller";
+  const helperText = dealing ? "Legger ut kort..." : !outcome ? `${currentPlayer}: velg ett kort · ${activeRow?.sips ?? 0} ${alcoholFree ? "poeng" : "valgfri straff"}` : "";
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-white px-3 py-3 text-center">

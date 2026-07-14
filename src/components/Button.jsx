@@ -1,13 +1,14 @@
-// Apple-stil knapp — hvitt tema.
 export default function Button({
   children,
   onClick,
   variant = "primary",
   disabled = false,
   className = "",
+  style,
+  type = "button",
 }) {
   const base =
-    "w-full rounded-[16px] px-6 py-4 font-display font-semibold text-lg tracking-tight transition-all duration-200 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100 disabled:cursor-not-allowed select-none";
+    "w-full select-none rounded-2xl px-6 py-4 font-display text-lg font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-950 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100";
 
   const variants = {
     primary:
@@ -20,8 +21,10 @@ export default function Button({
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
+      style={style}
       className={`${base} ${variants[variant]} ${className}`}
     >
       {children}
