@@ -1,109 +1,6 @@
 import { useState } from "react";
 import Button from "../components/Button";
-
-const HOLE_COUNT = 9;
-
-const CHALLENGES = [
-  {
-    title: "Papirputt",
-    par: 2,
-    task: "Lag en papirball og treff et tomt glass fra omtrent én meter.",
-    rule: "Tre forsøk. Bom på alle gir ett ekstra slag.",
-  },
-  {
-    title: "Feil hånd",
-    par: 3,
-    task: "Alle på laget bruker feil hånd frem til neste hull.",
-    rule: "Glemmer noen regelen, får laget ett ekstra slag.",
-  },
-  {
-    title: "Golfkommentator",
-    par: 3,
-    task: "Én på laget kommenterer neste minutt som en seriøs golfkommentator.",
-    rule: "Fullfør uten å bryte karakter for å klare par.",
-  },
-  {
-    title: "Lagrop",
-    par: 2,
-    task: "Finn på og fremfør et kort lagrop sammen.",
-    rule: "Hele laget må delta for å klare par.",
-  },
-  {
-    title: "Quizduell",
-    par: 3,
-    task: "Laget etter dere stiller ett valgfritt quizspørsmål.",
-    rule: "Riktig svar er par. Feil svar gir ett ekstra slag.",
-  },
-  {
-    title: "Stille hull",
-    par: 4,
-    task: "Hele laget skal være helt stille frem til neste hull.",
-    rule: "Hver som snakker gir laget ett ekstra slag, maks to.",
-  },
-  {
-    title: "Photo finish",
-    par: 2,
-    task: "Ta kveldens mest dramatiske lagbilde.",
-    rule: "Alle på laget må være med i bildet for å klare par.",
-  },
-  {
-    title: "Caddie",
-    par: 3,
-    task: "Velg én caddie som skal omtale lagkameratene med golfnavn.",
-    rule: "Glemmer caddien et golfnavn, får laget ett ekstra slag.",
-  },
-  {
-    title: "Presisjon",
-    par: 2,
-    task: "Skyv en mynt så nær bordkanten som mulig uten at den faller ned.",
-    rule: "Faller mynten ned, får laget ett ekstra slag.",
-  },
-  {
-    title: "Ingen mobil",
-    par: 4,
-    task: "Ingen på laget bruker mobilen frem til neste hull.",
-    rule: "Mobilen oppe gir laget ett ekstra slag.",
-  },
-  {
-    title: "Mimegolf",
-    par: 3,
-    task: "Én spiller mimer en aktivitet som resten av laget skal gjette.",
-    rule: "Gjett innen 30 sekunder for å klare par.",
-  },
-  {
-    title: "Komplimentrunden",
-    par: 2,
-    task: "Gi et ekte kompliment til laget på venstre side.",
-    rule: "Alle på laget bidrar for å klare par.",
-  },
-  {
-    title: "Balanse",
-    par: 3,
-    task: "Én på laget står på ett ben i 20 sekunder.",
-    rule: "Berører den andre foten gulvet, får laget ett ekstra slag.",
-  },
-  {
-    title: "Historien",
-    par: 4,
-    task: "Lag en historie der alle sier én setning hver.",
-    rule: "Historien må få en tydelig slutt for å klare par.",
-  },
-  {
-    title: "Finalegjetting",
-    par: 2,
-    task: "Gjett hvilket lag som leder før resultatlisten åpnes.",
-    rule: "Riktig gjetting gir ett slag under par.",
-  },
-];
-
-const shuffle = (items) => {
-  const next = [...items];
-  for (let index = next.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
-  }
-  return next;
-};
+import { TORBJORN_PUB_GOLF_COURSE } from "../data/pubGolfCourse";
 
 const createTeams = (count) => Array.from({ length: count }, (_, index) => ({
   id: `team-${index + 1}`,
@@ -147,7 +44,7 @@ function EndScreen({ teams, scores, onReplay, onBack }) {
 
   return (
     <main className="flex min-h-full flex-col items-center overflow-y-auto bg-white px-6 py-12 text-center">
-      <p className="text-sm text-gray-400">Pubgolf er ferdig</p>
+      <p className="text-sm text-gray-400">Torbjørn sin pubgolf er ferdig</p>
       <h1 className="mt-2 font-display text-5xl font-bold tracking-tighter text-gray-900">{ranked[0].name} vinner</h1>
       <div className="mt-8 w-full max-w-xs space-y-2">
         {ranked.map((team, index) => (
@@ -158,7 +55,7 @@ function EndScreen({ teams, scores, onReplay, onBack }) {
         ))}
       </div>
       <div className="mt-10 w-full max-w-xs space-y-3">
-        <Button onClick={onReplay}>Ny pubgolf</Button>
+        <Button onClick={onReplay}>Ny runde</Button>
         <Button variant="secondary" onClick={onBack}>Til meny</Button>
       </div>
     </main>
@@ -176,7 +73,7 @@ export default function PubGolf({ onBack, onComplete }) {
 
   const start = () => {
     const nextTeams = createTeams(teamCount);
-    const nextHoles = shuffle(CHALLENGES).slice(0, HOLE_COUNT);
+    const nextHoles = TORBJORN_PUB_GOLF_COURSE.map((hole) => ({ ...hole }));
     setTeams(nextTeams);
     setHoles(nextHoles);
     setScores(createScores(nextTeams, nextHoles));
@@ -203,9 +100,9 @@ export default function PubGolf({ onBack, onComplete }) {
     return (
       <main className="relative flex min-h-full flex-col items-center justify-center overflow-y-auto bg-white px-6 py-12 text-center">
         <button onClick={onBack} className="absolute left-5 top-5 min-h-11 rounded-full bg-gray-100 px-4 text-sm text-gray-500 transition active:scale-95">← Meny</button>
-        <p className="mb-2 text-sm text-gray-400">9 utfordringer</p>
-        <h1 className="font-display text-6xl font-bold tracking-tighter text-gray-900">Pubgolf</h1>
-        <p className="mt-4 max-w-xs text-base leading-relaxed text-gray-400">Velg antall lag. Vi ordner resten.</p>
+        <p className="mb-2 text-sm text-gray-400">9 faste hull</p>
+        <h1 className="max-w-xs font-display text-5xl font-bold tracking-tighter text-gray-900">Torbjørn sin pubgolf</h1>
+        <p className="mt-4 max-w-xs text-base leading-relaxed text-gray-400">Din bane, din rekkefølge. Velg antall lag.</p>
 
         <div className="mt-12 w-full max-w-xs">
           <p className="mb-3 text-xs uppercase tracking-[0.2em] text-gray-400">Antall lag</p>

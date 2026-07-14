@@ -87,14 +87,14 @@ export const GAMES = [
   },
   {
     id: "pubgolf",
-    name: "Festgolf",
-    description: "Velg antall lag og spill ni tydelige utfordringer.",
+    name: "Torbjørn sin pubgolf",
+    description: "Ni faste hull i rekkefølgen Torbjørn har bestemt.",
     category: "teams",
     icon: "golf",
     accent: "#168b68",
     premium: false,
     minPlayers: 2,
-    highlights: ["Lagspill", "9 utfordringer", "Automatisk oppsett"],
+    highlights: ["Lagspill", "9 faste hull", "Torbjørns bane"],
   },
 ];
 
