@@ -1,4 +1,6 @@
-export const MAX_CURRENCY = 5;
+export const STARTING_CURRENCY = 5;
+export const MAX_CURRENCY = 8;
+export const PURCHASES_PER_TURN = 1;
 export const WINNING_NEIGHBORHOODS = 2;
 
 export const NEIGHBORHOODS = {
@@ -12,23 +14,23 @@ export const NEIGHBORHOODS = {
 export const BOARD_SPACES = [
   { id: "start", type: "start", name: "Start" },
   { id: "skipperstuen", type: "property", name: "Skipperstuen", shortName: "Skipper", group: "brown", cost: 1 },
-  { id: "challenge-1", type: "challenge", name: "Challenge" },
+  { id: "bonus-0", type: "bonus", name: "Bonusfelt" },
   { id: "heidis", type: "property", name: "Heidi's", shortName: "Heidi's", group: "brown", cost: 1 },
-  { id: "bonus-1", type: "bonus", name: "Bonuskort" },
+  { id: "bonus-1", type: "bonus", name: "Bonusfelt" },
   { id: "old-irish", type: "property", name: "The Old Irish Pub", shortName: "Old Irish", group: "blue", cost: 2 },
   { id: "kulturhuset", type: "property", name: "Kulturhuset", shortName: "Kulturhuset", group: "blue", cost: 2 },
-  { id: "challenge-2", type: "challenge", name: "Challenge" },
+  { id: "bonus-2", type: "bonus", name: "Bonusfelt" },
   { id: "jail", type: "jail", name: "Fyllarresten" },
   { id: "jaeger", type: "property", name: "Jæger", shortName: "Jæger", group: "pink", cost: 2 },
   { id: "the-villa", type: "property", name: "The Villa", shortName: "The Villa", group: "pink", cost: 2 },
-  { id: "bonus-2", type: "bonus", name: "Bonuskort" },
+  { id: "bonus-3", type: "bonus", name: "Bonusfelt" },
   { id: "water", type: "pause", name: "Vannpause" },
   { id: "loulou", type: "property", name: "LouLou", shortName: "LouLou", group: "green", cost: 3 },
   { id: "sommerro", type: "property", name: "Sommerro", shortName: "Sommerro", group: "green", cost: 3 },
-  { id: "challenge-3", type: "challenge", name: "Challenge" },
+  { id: "bonus-4", type: "bonus", name: "Bonusfelt" },
   { id: "taxi", type: "taxi", name: "Taxi til Start" },
   { id: "grand-hotel", type: "property", name: "Grand Hotel Oslo", shortName: "Grand", group: "navy", cost: 4 },
-  { id: "bonus-3", type: "bonus", name: "Bonuskort" },
+  { id: "bonus-5", type: "bonus", name: "Bonusfelt" },
   { id: "the-thief", type: "property", name: "The Thief", shortName: "The Thief", group: "navy", cost: 4 },
 ];
 
@@ -66,4 +68,3 @@ export const PIECES = [
   { id: "cider", name: "Cider", color: "#df7c45" },
   { id: "breezer", name: "Breezer", color: "#c65a9c" },
 ];
-
