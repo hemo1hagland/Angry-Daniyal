@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Home from "./screens/Home";
 import GameMenu from "./screens/GameMenu";
 import PlayerSetup from "./screens/PlayerSetup";
@@ -16,6 +16,9 @@ const HorseRace = lazy(() => import("./screens/HorseRace"));
 const PubGolf = lazy(() => import("./screens/PubGolf"));
 const SpinWheel = lazy(() => import("./screens/SpinWheel"));
 const BusRoute = lazy(() => import("./screens/BusRoute"));
+const QuestionGame = lazy(() => import("./screens/QuestionGame"));
+
+const DIRECT_START_GAMES = new Set(["questions", "pubgolf"]);
 
 const getDeepLinkedGame = () => {
   const id = new URLSearchParams(window.location.search).get("game");
@@ -28,8 +31,8 @@ function LoadingScreen() {
 
 export default function App() {
   const deepLinkedGame = getDeepLinkedGame();
-  const eventPack = useMemo(() => getActiveEventPack(), []);
-  const [screen, setScreen] = useState(deepLinkedGame ? "setup" : "home");
+  const [eventPack] = useState(getActiveEventPack);
+  const [screen, setScreen] = useState(deepLinkedGame ? (DIRECT_START_GAMES.has(deepLinkedGame) ? deepLinkedGame : "setup") : "home");
   const [selectedGameId, setSelectedGameId] = useState(deepLinkedGame);
   const [players, setPlayers] = usePersistentState("vors.players", []);
   const [alcoholFree, setAlcoholFree] = usePersistentState("vors.alcoholFree", false);
@@ -55,7 +58,7 @@ export default function App() {
 
   const selectGame = (gameId) => {
     setSelectedGameId(gameId);
-    setScreen("setup");
+    setScreen(DIRECT_START_GAMES.has(gameId) ? gameId : "setup");
     trackEvent("game_selected", { gameId });
   };
 
@@ -102,6 +105,7 @@ export default function App() {
         {screen === "pubgolf" && <PubGolf {...gameProps} />}
         {screen === "wheel" && <SpinWheel {...gameProps} />}
         {screen === "busroute" && <BusRoute {...gameProps} />}
+        {screen === "questions" && <QuestionGame {...gameProps} />}
       </Suspense>
 
       <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} gameId={selectedGameId} eventPack={eventPack} />
